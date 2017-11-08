@@ -1,73 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommandLine;
 using svg.generator.shared;
+using svg.generator.shared.Tools;
 
 namespace svg.generator.client.console
 {
-	class Program
+	public class Program
 	{
-		static void Main(string[] args)
-		{
-			Console.WriteLine("Console args:");
-			Console.WriteLine(string.Join(Environment.NewLine, args));
+		private static readonly List<MobileImagingTool> Tools = new List<MobileImagingTool>();
 
-			if (Environment.UserInteractive)
-			{
-				while (true)
-				{
-					Console.Clear();
-					if (!RunParse(null))
-						return;
-				}
-			}
-			else
-			{
-				RunParse(args);
-			}
+		static Program()
+		{
+			Tools.Add(new ImageGeneratorTool());
 		}
 
-		private static bool RunParse(string[] args)
+		public static async Task Main(string[] args)
 		{
-			var consoleOptions = new GeneratorOptions();
-			Console.WriteLine(consoleOptions.GetUsage());
-
-			if (args == null)
-				args = Console.ReadLine().Split(' ');
-
-			var parseSuccess = Parser.Default.ParseArguments(args, consoleOptions);
-
-			if (!parseSuccess)
+			if (!args.Any(d => d.Contains("-t")))
 			{
-				Console.WriteLine("One or multiple parsing errors occured.");
-				foreach (var error in consoleOptions.LastParserState.Errors)
+				Console.WriteLine("The following tools are supported: Pick a tool by using: -t {toolname}");
+				Console.WriteLine("");
+				foreach (var tool in Tools)
 				{
-					Console.WriteLine($"error: {error.BadOption.ShortName}");
+					Console.WriteLine($"-{tool.Name}");
 				}
-				Console.ReadKey();
+				Console.WriteLine("");
 			}
 
-			if (consoleOptions.Exit)
-				return false;
+			var contextFactory = new ConsoleContextFactory();
+			contextFactory.Arguments = args;
+			var context = contextFactory.Create();
 
-			Execute(consoleOptions);
-
-			if (Environment.UserInteractive)
+			foreach (var tool in Tools)
 			{
-				Console.WriteLine("done.");
-				Console.ReadKey();
+				if (tool.TryClaimContext(context))
+					await tool.ExecuteAsync().ConfigureAwait(false);
 			}
-
-			return true;
-		}
-
-		private static void Execute(GeneratorOptions consoleOptions)
-		{
-			var generator = new ImageGenerator(consoleOptions, Console.WriteLine);
-			generator.Execute();
 		}
 	}
 }

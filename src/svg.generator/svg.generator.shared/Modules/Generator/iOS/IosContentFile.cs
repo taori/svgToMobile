@@ -1,4 +1,4 @@
-﻿namespace svg.generator.shared.iOS
+﻿namespace svg.generator.shared.Modules.Generator.iOS
 {
 	public class IosContentFile
 	{

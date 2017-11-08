@@ -1,8 +1,8 @@
 ﻿using CommandLine;
 using CommandLine.Text;
-using svg.generator.shared;
+using svg.generator.shared.Modules.Generator;
 
-namespace svg.generator.client.console
+namespace svg.generator.client.console.Options
 {
 	public class GeneratorOptions : IGeneratorOptions
 	{
@@ -16,6 +16,11 @@ namespace svg.generator.client.console
 			HelpText = "The output folder for rendered graphics.")]
 		public string Destination { get; set; }
 
+		[Option('t', "tool",
+			Required = true,
+			HelpText = "The name of the tool to be executed.")]
+		public string ToolName { get; set; }
+
 		[Option('v', "verbosity",
 			DefaultValue = false,
 			HelpText = "Verbose mode.")]
@@ -24,7 +29,7 @@ namespace svg.generator.client.console
 		[Option('f', "formats",
 			Required = true,
 			HelpText = "Formats to generate from svg files. Specify like: 32x32 or 32x32;64x64.")]
-		public string Formats { get; set; }
+		public string ImageFormats { get; set; }
 
 		[Option('c', "createDestination",
 			DefaultValue = false,
@@ -33,14 +38,9 @@ namespace svg.generator.client.console
 
 		[Option("skipExisting",
 			DefaultValue = false,
-			HelpText = "Skip images which already exist")]
+			HelpText = "Skip images which already exist.")]
 		public bool SkipExisting { get; set; }
-
-		[Option("exit",
-			DefaultValue = false,
-			HelpText = "Exit application.")]
-		public bool Exit { get; set; }
-
+		
 		[Option('r', "recursive",
 			DefaultValue = false,
 			HelpText = "Recursive source read mode.")]

@@ -2,14 +2,14 @@
 using System.IO;
 using System.Linq;
 
-namespace svg.generator.shared
+namespace svg.generator.shared.Utility
 {
 	public static class IoHelper
 	{
 		public static bool CreateDirectoryRecursive(string fullPath)
 		{
 			var paths = fullPath.Split(Path.DirectorySeparatorChar);
-			if(paths.Length < 2)
+			if(paths.Length < 3)
 				throw new ArgumentException("Path can't be seperated properly.", fullPath);
 
 			if (Directory.Exists(fullPath))

@@ -51,20 +51,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileNameHelper.cs" />
-    <Compile Include="GenerationInformation.cs" />
-    <Compile Include="IGeneratorOptions.cs" />
-    <Compile Include="ImageGenerator.cs" />
-    <Compile Include="IoHelper.cs" />
-    <Compile Include="iOS\IosContentFile.cs" />
-    <Compile Include="iOS\IosContentFileImage.cs" />
-    <Compile Include="iOS\IosContentFileInfo.cs" />
+    <Compile Include="Utility\FileNameHelper.cs" />
+    <Compile Include="Modules\Generator\ImageInformation.cs" />
+    <Compile Include="Modules\Generator\GeneratorContext.cs" />
+    <Compile Include="Modules\Generator\IGeneratorOptions.cs" />
+    <Compile Include="Tools\ImageGeneratorTool.cs" />
+    <Compile Include="Utility\IoHelper.cs" />
+    <Compile Include="Modules\Generator\iOS\IosContentFile.cs" />
+    <Compile Include="Modules\Generator\iOS\IosContentFileImage.cs" />
+    <Compile Include="Modules\Generator\iOS\IosContentFileInfo.cs" />
+    <Compile Include="Utility\IProgressVisualizerFactory.cs" />
+    <Compile Include="Modules\GeneratorModule.cs" />
+    <Compile Include="Modules\Generator\AndroidGeneratorModule.cs" />
+    <Compile Include="Modules\Generator\IosGeneratorModule.cs" />
+    <Compile Include="Modules\Generator\WebGeneratorModule.cs" />
     <Compile Include="ResolutionConverter.cs" />
-    <Compile Include="SvgConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\MobileImagingTool.cs" />
+    <Compile Include="Utility\IToolContext.cs" />
+    <Compile Include="Utility\IToolContextFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
