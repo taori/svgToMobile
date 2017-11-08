@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using svg.generator.shared.Modules.Generator;
 using svg.generator.shared.Utility;
@@ -34,7 +35,7 @@ namespace svg.generator.shared.Modules
 
 		protected async Task GenerateFilesAsync(List<ImageInformation> parameters)
 		{
-			Context.Log($"{this.GetType().Name} generating files:");
+			Context.Log($" - {this.GetType().Name}");
 
 			using (var progress = Context.ProgressVisualizerFactory.Create())
 			{
@@ -49,12 +50,12 @@ namespace svg.generator.shared.Modules
 
 					IoHelper.CreateDirectoryRecursive(Path.GetDirectoryName(parameter.DestinationPath));
 
-					await ConvertImageAsync(parameter.SourcePath, parameter.DestinationPath, parameter.WidthDp, parameter.HeightDp, parameter.Dpi, ImageFormat.Png).ConfigureAwait(false);
+					await ConvertImageAsync(parameter.SourcePath, parameter.DestinationPath, parameter.WidthDp, parameter.HeightDp, parameter.Dpi, ImageFormat.Png, parameter.ColorCode).ConfigureAwait(false);
 				}
 			}
 		}
 
-		protected async Task ConvertImageAsync(string source, string destination, int widthDp, int heightDp, int dpi, ImageFormat imageFormat)
+		protected async Task ConvertImageAsync(string source, string destination, int widthDp, int heightDp, int dpi, ImageFormat imageFormat, string color = null)
 		{
 			var pixelWidth = ResolutionConverter.DpToPixel(widthDp, dpi);
 			var pixelHeight = ResolutionConverter.DpToPixel(heightDp, dpi);
@@ -65,11 +66,35 @@ namespace svg.generator.shared.Modules
 				document.Width = new SvgUnit(SvgUnitType.Pixel, pixelWidth);
 				document.Height = new SvgUnit(SvgUnitType.Pixel, pixelHeight);
 				document.Ppi = dpi;
+				if (color != null)
+				{
+					foreach (var documentChild in document.Children)
+					{
+						ChangeFill(documentChild, ColorHelper.FromRgb(color));
+					}
+				}
+
 				document.Draw(bitmap);
 
 				using (var writeStream = new FileStream(destination, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
 				{
 					bitmap.Save(writeStream, imageFormat);
+				}
+			}
+		}
+
+		private void ChangeFill(SvgElement element, Color replaceColor)
+		{
+			if (element is SvgPath path)
+			{
+				element.Fill = new SvgColourServer(replaceColor);
+			}
+
+			if (element.Children.Count > 0)
+			{
+				foreach (var item in element.Children)
+				{
+					ChangeFill(item, replaceColor);
 				}
 			}
 		}

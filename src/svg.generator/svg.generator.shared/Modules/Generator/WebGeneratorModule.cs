@@ -10,12 +10,28 @@ namespace svg.generator.shared.Modules.Generator
 		/// <inheritdoc />
 		public override IEnumerable<ImageInformation> GetParameters()
 		{
-			foreach (var sourceFile in Sources)
+			if (!string.IsNullOrEmpty(Context.Options.ColorCodes))
 			{
-				var fileName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile);
+				foreach (var colorCode in Context.Options.GetColorCodes())
+				{
+					foreach (var sourceFile in Sources)
+					{
+						var fileName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile, colorCode);
 
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "web", $"{fileName}_1x.png"), Width, Height, 72);
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "web", $"{fileName}_2x.png"), Width, Height, 144);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "web", $"{fileName}_1x.png"), Width, Height, 72, colorCode);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "web", $"{fileName}_2x.png"), Width, Height, 144, colorCode);
+					}
+				}
+			}
+			else
+			{
+				foreach (var sourceFile in Sources)
+				{
+					var fileName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile);
+
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "web", $"{fileName}_1x.png"), Width, Height, 72);
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "web", $"{fileName}_2x.png"), Width, Height, 144);
+				}
 			}
 		}
 

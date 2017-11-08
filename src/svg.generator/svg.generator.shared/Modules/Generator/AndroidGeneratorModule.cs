@@ -19,16 +19,36 @@ namespace svg.generator.shared.Modules.Generator
 				 *	xxxhdpi (extra-extra-extra-high) ~640dpi
 				*/
 
-			foreach (var sourceFile in Sources)
+			if (!string.IsNullOrEmpty(Context.Options.ColorCodes))
 			{
-				var sanitizedAssetName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile);
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable", $"{sanitizedAssetName}.png"), Width, Height, 160);
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-ldpi", $"{sanitizedAssetName}.png"), Width, Height, 120);
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-mdpi", $"{sanitizedAssetName}.png"), Width, Height, 160);
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-hdpi", $"{sanitizedAssetName}.png"), Width, Height, 240);
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xhdpi", $"{sanitizedAssetName}.png"), Width, Height, 320);
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xxhdpi", $"{sanitizedAssetName}.png"), Width, Height, 480);
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xxxhdpi", $"{sanitizedAssetName}.png"), Width, Height, 640);
+				foreach (var colorCode in Context.Options.GetColorCodes())
+				{
+					foreach (var sourceFile in Sources)
+					{
+						var sanitizedAssetName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile, colorCode);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable", $"{sanitizedAssetName}.png"), Width, Height, 160, colorCode);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-ldpi", $"{sanitizedAssetName}.png"), Width, Height, 120, colorCode);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-mdpi", $"{sanitizedAssetName}.png"), Width, Height, 160, colorCode);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-hdpi", $"{sanitizedAssetName}.png"), Width, Height, 240, colorCode);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xhdpi", $"{sanitizedAssetName}.png"), Width, Height, 320, colorCode);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xxhdpi", $"{sanitizedAssetName}.png"), Width, Height, 480, colorCode);
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xxxhdpi", $"{sanitizedAssetName}.png"), Width, Height, 640, colorCode);
+					}
+				}
+			}
+			else
+			{
+				foreach (var sourceFile in Sources)
+				{
+					var sanitizedAssetName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile);
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable", $"{sanitizedAssetName}.png"), Width, Height, 160);
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-ldpi", $"{sanitizedAssetName}.png"), Width, Height, 120);
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-mdpi", $"{sanitizedAssetName}.png"), Width, Height, 160);
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-hdpi", $"{sanitizedAssetName}.png"), Width, Height, 240);
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xhdpi", $"{sanitizedAssetName}.png"), Width, Height, 320);
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xxhdpi", $"{sanitizedAssetName}.png"), Width, Height, 480);
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, sanitizedAssetName, "android", "drawable-xxxhdpi", $"{sanitizedAssetName}.png"), Width, Height, 640);
+				}
 			}
 		}
 

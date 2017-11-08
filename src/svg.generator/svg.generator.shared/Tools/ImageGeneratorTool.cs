@@ -12,6 +12,16 @@ namespace svg.generator.shared.Tools
 {
 	public class ImageGeneratorTool : MobileImagingTool<GeneratorContext>
 	{
+		public ImageGeneratorTool()
+		{
+			_modules = new List<GeneratorModule>()
+			{
+				new AndroidGeneratorModule(),
+				new IosGeneratorModule(),
+				new WebGeneratorModule()
+			};
+		}
+
 		private static readonly Regex FormatRegex = new Regex(@"^(?<width>[\d]+)x(?<height>[\d]+)$");
 
 		/// <inheritdoc />
@@ -41,18 +51,10 @@ namespace svg.generator.shared.Tools
 				return false;
 			}
 
-			if (Context.Options.CreateDestinationFolder)
+			if (!Directory.Exists(Context.Options.Destination))
 			{
 				Context.Log($"Creating destination folder \"{Context.Options.Destination}\".");
 				IoHelper.CreateDirectoryRecursive(Context.Options.Destination);
-			}
-			else
-			{
-				if (!Directory.Exists(Context.Options.Destination))
-				{
-					Context.Log($"Destination folder \"{Context.Options.Destination}\" does not exist.");
-					return false;
-				}
 			}
 
 			var searchOption = Context.Options.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
@@ -71,7 +73,9 @@ namespace svg.generator.shared.Tools
 
 				var match = FormatRegex.Match(format);
 
-				Context.Log($"Generating images for the format {format}");
+				Context.Log($"");
+				Context.Log($"   format: {format}");
+				Context.Log($"");
 
 				var width = Int32.Parse(match.Groups["width"].Value);
 				var height = Int32.Parse(match.Groups["height"].Value);
@@ -83,6 +87,10 @@ namespace svg.generator.shared.Tools
 					await module.GenerateAsync(parameters);
 				}
 			}
+
+#if DEBUG
+			Console.ReadKey();
+#endif
 
 			return true;
 		}

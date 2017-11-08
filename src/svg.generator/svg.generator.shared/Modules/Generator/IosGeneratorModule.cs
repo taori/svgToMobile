@@ -15,14 +15,31 @@ namespace svg.generator.shared.Modules.Generator
 		public override IEnumerable<ImageInformation> GetParameters()
 		{
 			// https://stackoverflow.com/questions/1365112/what-dpi-resolution-is-used-for-an-iphone-app
-
-			foreach (var sourceFile in Sources)
+			
+			if (!string.IsNullOrEmpty(Context.Options.ColorCodes))
 			{
-				var fileName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile);
+				foreach (var colorCode in Context.Options.GetColorCodes())
+				{
+					foreach (var sourceFile in Sources)
+					{
+						var fileName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile, colorCode);
 
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_1x.png"), Width, Height, 163, new KeyValuePair<string, string>("scale", "1x"));
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_2x.png"), Width, Height, 326, new KeyValuePair<string, string>("scale", "2x"));
-				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_3x.png"), Width, Height, 489, new KeyValuePair<string, string>("scale", "3x"));
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_1x.png"), Width, Height, 163, colorCode, new KeyValuePair<string, string>("scale", "1x"));
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_2x.png"), Width, Height, 326, colorCode, new KeyValuePair<string, string>("scale", "2x"));
+						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_3x.png"), Width, Height, 489, colorCode, new KeyValuePair<string, string>("scale", "3x"));
+					}
+				}
+			}
+			else
+			{
+				foreach (var sourceFile in Sources)
+				{
+					var fileName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile);
+
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_1x.png"), Width, Height, 163, null, new KeyValuePair<string, string>("scale", "1x"));
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_2x.png"), Width, Height, 326, null, new KeyValuePair<string, string>("scale", "2x"));
+					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_3x.png"), Width, Height, 489, null, new KeyValuePair<string, string>("scale", "3x"));
+				}
 			}
 		}
 
@@ -39,7 +56,7 @@ namespace svg.generator.shared.Modules.Generator
 			int i = 0;
 			var max = imageSetGroups.Count();
 
-			Context.Log($"Generating ios Contents.json files");
+			Context.Log($" - Generating ios Contents.json files");
 			using (var progress = Context.ProgressVisualizerFactory.Create())
 			{
 				foreach (var group in imageSetGroups)

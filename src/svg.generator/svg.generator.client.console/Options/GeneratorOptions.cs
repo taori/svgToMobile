@@ -30,17 +30,17 @@ namespace svg.generator.client.console.Options
 			Required = true,
 			HelpText = "Formats to generate from svg files. Specify like: 32x32 or 32x32;64x64.")]
 		public string ImageFormats { get; set; }
-
-		[Option('c', "createDestination",
-			DefaultValue = false,
-			HelpText = "Creates destination if it does not exist yet.")]
-		public bool CreateDestinationFolder { get; set; }
-
+		
 		[Option("skipExisting",
 			DefaultValue = false,
 			HelpText = "Skip images which already exist.")]
 		public bool SkipExisting { get; set; }
-		
+
+		[Option('c', "color",
+			DefaultValue = null,
+			HelpText = "Accepts colors in a pattern like #ffffffx#ffffffff ")]
+		public string ColorCodes { get; set; }
+
 		[Option('r', "recursive",
 			DefaultValue = false,
 			HelpText = "Recursive source read mode.")]

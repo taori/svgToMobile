@@ -1,4 +1,8 @@
-﻿namespace svg.generator.shared.Modules.Generator
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+namespace svg.generator.shared.Modules.Generator
 {
 	public interface IToolOptions
 	{
@@ -36,13 +40,30 @@
 		bool Recursive { get; set; }
 
 		/// <summary>
-		/// Whether or not the destination folder should be created if it does not exist yet.
-		/// </summary>
-		bool CreateDestinationFolder { get; set; }
-
-		/// <summary>
 		/// Whether or not the destination subfolders should be deleted if they already exist.
 		/// </summary>
 		bool SkipExisting { get; set; }
+
+		/// <summary>
+		/// Color which should be applied to the rendered image.
+		/// Accepts pattern like #ffffffx#ffffffff
+		/// </summary>
+		string ColorCodes { get; set; }
+	}
+
+	public static class GeneratorOptionsExtensions
+	{
+		private static readonly Regex ColorCodeRegex = new Regex(@"(?:(#[0-9a-f]{6,8})x?)+");
+
+		public static IEnumerable<string> GetColorCodes(this IGeneratorOptions source)
+		{
+			if(string.IsNullOrEmpty(source.ColorCodes))
+				yield break;
+
+			foreach (var s in source.ColorCodes.Split('x'))
+			{
+				yield return s;
+			}
+		}
 	}
 }
