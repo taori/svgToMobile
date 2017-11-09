@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -15,6 +16,16 @@ namespace svg.generator.shared.Modules.Generator
 		/// Whether or not logging is enabled. 
 		/// </summary>
 		bool LoggingEnabled { get; set; }
+
+		/// <summary>
+		/// Whether or not the application should be run in non interactive mode.
+		/// </summary>
+		bool Interactive { get; set; }
+
+		/// <summary>
+		/// Description of the options
+		/// </summary>
+		string Description { get; }
 	}
 
 	public interface IGeneratorOptions : IToolOptions
@@ -49,11 +60,16 @@ namespace svg.generator.shared.Modules.Generator
 		/// Accepts pattern like #ffffffx#ffffffff
 		/// </summary>
 		string ColorCodes { get; set; }
+
+		/// <summary>
+		/// Accepts pattern like .jpg,.png
+		/// </summary>
+		string FileExtensions { get; set; }
 	}
 
 	public static class GeneratorOptionsExtensions
 	{
-		private static readonly Regex ColorCodeRegex = new Regex(@"(?:(#[0-9a-f]{6,8})x?)+");
+		public static readonly Regex ColorCodeRegex = new Regex(@"^(?:(#[0-9a-f]{6,8})x?)+$");
 
 		public static IEnumerable<string> GetColorCodes(this IGeneratorOptions source)
 		{
@@ -63,6 +79,40 @@ namespace svg.generator.shared.Modules.Generator
 			foreach (var s in source.ColorCodes.Split('x'))
 			{
 				yield return s;
+			}
+		}
+
+		public static readonly Regex FormatRegex = new Regex(@"^(?:([\d]+x[\d]+);?)+$");
+
+		public static IEnumerable<(int width, int height)> GetImageFormats(this IGeneratorOptions source)
+		{
+			if(string.IsNullOrEmpty(source.ImageFormats))
+				yield break;
+			if(!FormatRegex.IsMatch(source.ImageFormats))
+				yield break;
+
+			foreach (var formatPair in source.ImageFormats.Split(';'))
+			{
+				var formatArr = formatPair.Split('x');
+				yield return (int.Parse(formatArr[0]), Int32.Parse(formatArr[1]));
+
+			}
+		}
+
+		public static readonly Regex ExtensionRegex = new Regex(@"^(?:(\.[\w]+),?)+$");
+
+		public static IEnumerable<string> GetExtensions(this IGeneratorOptions source)
+		{
+			var extensions = source?.FileExtensions?.Trim();
+			if(string.IsNullOrEmpty(extensions))
+				yield break;
+			if(!ExtensionRegex.IsMatch(extensions))
+				yield break;
+
+			foreach (var extension in extensions.Split(','))
+			{
+				yield return extension;
+
 			}
 		}
 	}

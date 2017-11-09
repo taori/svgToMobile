@@ -21,9 +21,7 @@ namespace svg.generator.shared.Tools
 				new WebGeneratorModule()
 			};
 		}
-
-		private static readonly Regex FormatRegex = new Regex(@"^(?<width>[\d]+)x(?<height>[\d]+)$");
-
+		
 		/// <inheritdoc />
 		public override string Name => "ImageGenerator";
 
@@ -40,59 +38,89 @@ namespace svg.generator.shared.Tools
 
 			return false;
 		}
-
-		/// <param name="context"></param>
+		
 		/// <inheritdoc />
 		public override async Task<bool> ExecuteAsync()
 		{
 			if (!Directory.Exists(Context.Options.Source))
 			{
-				Context.Log($"Source folder \"{Context.Options.Source}\" does not exist.");
+				Context.LogLine($"Source folder \"{Context.Options.Source}\" does not exist.");
 				return false;
 			}
 
 			if (!Directory.Exists(Context.Options.Destination))
 			{
-				Context.Log($"Creating destination folder \"{Context.Options.Destination}\".");
 				IoHelper.CreateDirectoryRecursive(Context.Options.Destination);
 			}
 
 			var searchOption = Context.Options.Recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
 			var sourceFiles = Directory.GetFiles(Context.Options.Source, "*.svg", searchOption);
 
-			Context.Log($"Generating files based on {sourceFiles.Length} source files.");
+			Context.LogLine($"Generating files based on {sourceFiles.Length} source files.");
 
-			var formats = Context.Options.ImageFormats.Split(';');
-			foreach (var format in formats)
+			var formatCount = Context.Options.GetImageFormats().Count();
+			if(formatCount <= 0)
 			{
-				if (!FormatRegex.IsMatch(format))
+				Context.LogLine($"Invalid format specified: {Context.Options.ImageFormats}.");
+				return false;
+			}
+
+			var colorCount = Context.Options.GetColorCodes().Count();
+			var extensions = Context.Options.GetExtensions().ToArray();
+
+			if(extensions.Length == 0)
+			{
+				Context.LogLine($"Invalid extensions specified: {Context.Options.FileExtensions}.");
+				return false;
+			}
+
+			var current = 0;
+			var max = formatCount * Math.Max(1, colorCount);
+
+			if (colorCount <= 0)
+			{
+				foreach (var format in Context.Options.GetImageFormats())
 				{
-					Context.Log($"Invalid format specified: {format}");
-					continue;
+					current++;
+					await RunModuleAsync(current, max, sourceFiles, format, null, extensions).ConfigureAwait(false);
 				}
-
-				var match = FormatRegex.Match(format);
-
-				Context.Log($"");
-				Context.Log($"   format: {format}");
-				Context.Log($"");
-
-				var width = Int32.Parse(match.Groups["width"].Value);
-				var height = Int32.Parse(match.Groups["height"].Value);
-
-				foreach (var module in _modules)
+			}
+			else
+			{
+				foreach (var colorCode in Context.Options.GetColorCodes())
 				{
-					module.Configure(Context, width, height, sourceFiles);
-					var parameters = module.GetParameters().ToList();
-					await module.GenerateAsync(parameters);
+					foreach (var format in Context.Options.GetImageFormats())
+					{
+						current++;
+						await RunModuleAsync(current, max, sourceFiles, format, colorCode, extensions).ConfigureAwait(false);
+					}
 				}
 			}
 
+			Context.LogLine($"done.");
+
 #if DEBUG
-			Console.ReadKey();
+			if (Context.Options.Interactive)
+				Console.ReadKey();
 #endif
 
 			return true;
+		}
+		
+		private async Task RunModuleAsync(int current, int max, string[] sourceFiles, (int width, int height) format, string colorCode, string[] extensions)
+		{
+			var m = max.ToString().Length;
+			var progress = string.Format("{0}/{1}", current.ToString().PadLeft(m, ' '), max);
+			Context.LogLine($"");
+			Context.LogLine($"   {progress} format: {format}, color: {colorCode ?? "none"}, extension: {string.Join(",", extensions)}");
+			Context.LogLine($"");
+
+			foreach (var module in _modules)
+			{
+				module.Configure(Context, format.width, format.height, sourceFiles, colorCode, extensions);
+				var parameters = module.GetParameters().ToList();
+				await module.GenerateAsync(parameters).ConfigureAwait(false);
+			}
 		}
 	}
 }

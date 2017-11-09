@@ -51,8 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Tools\ToolContextBase.cs" />
     <Compile Include="Utility\ColorHelper.cs" />
-    <Compile Include="Utility\FileNameHelper.cs" />
     <Compile Include="Modules\Generator\ImageInformation.cs" />
     <Compile Include="Modules\Generator\GeneratorContext.cs" />
     <Compile Include="Modules\Generator\IGeneratorOptions.cs" />

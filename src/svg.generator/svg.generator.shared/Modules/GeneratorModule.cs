@@ -13,17 +13,34 @@ namespace svg.generator.shared.Modules
 {
 	public abstract class GeneratorModule
 	{
-		internal void Configure(GeneratorContext context, int width, int height, string[] sourceFiles)
+		internal void Configure(GeneratorContext context, int width, int height, string[] sourceFiles, string colorCode,
+			string[] extensions)
 		{
 			Context = context;
+			Extensions = extensions;
+			ColorCode = colorCode;
 			Sources = sourceFiles ?? throw new ArgumentNullException(nameof(sourceFiles));
 			Width = width;
 			Height = height;
 		}
 
+		protected string GetSanitizedFileName(string sourceFile)
+		{
+			// someimage.svg -> someimage_24x24dp
+			if (string.IsNullOrEmpty(ColorCode?.Trim()))
+			{
+				return $"{Path.GetFileNameWithoutExtension(sourceFile)?.Replace('.', '_')}_{Width}x{Height}dp";
+			}
+			return $"{Path.GetFileNameWithoutExtension(sourceFile)?.Replace('.', '_')}_{Width}x{Height}dp_{ColorCode}";
+		}
+
 		public GeneratorContext Context { get; internal set; }
 
+		public string[] Extensions { get; internal set; }
+
 		public string[] Sources { get; internal set; }
+
+		public string ColorCode { get; internal set; }
 
 		public int Height { get; internal set; }
 
@@ -35,7 +52,7 @@ namespace svg.generator.shared.Modules
 
 		protected async Task GenerateFilesAsync(List<ImageInformation> parameters)
 		{
-			Context.Log($" - {this.GetType().Name}");
+			Context.Log($" - {this.GeneratorName} ");
 
 			using (var progress = Context.ProgressVisualizerFactory.Create())
 			{
@@ -50,12 +67,26 @@ namespace svg.generator.shared.Modules
 
 					IoHelper.CreateDirectoryRecursive(Path.GetDirectoryName(parameter.DestinationPath));
 
-					await ConvertImageAsync(parameter.SourcePath, parameter.DestinationPath, parameter.WidthDp, parameter.HeightDp, parameter.Dpi, ImageFormat.Png, parameter.ColorCode).ConfigureAwait(false);
+					foreach (var extension in Extensions)
+					{
+						if (TryGetFormat(extension, out ImageFormat format))
+						{
+							var destinationFolder = Path.GetDirectoryName(parameter.DestinationPath);
+							var fnWithoutEx = Path.GetFileNameWithoutExtension(parameter.DestinationPath);
+
+							await ConvertImageAsync(parameter.SourcePath, Path.Combine(destinationFolder, $"{fnWithoutEx}{extension}"), parameter.WidthDp, parameter.HeightDp,
+								parameter.Dpi, format, parameter.ColorCode).ConfigureAwait(false);
+						}
+					}
 				}
 			}
+
+			Context.Log(Environment.NewLine);
 		}
 
-		protected async Task ConvertImageAsync(string source, string destination, int widthDp, int heightDp, int dpi, ImageFormat imageFormat, string color = null)
+		public abstract string GeneratorName { get; }
+
+		protected async Task ConvertImageAsync(string source, string destination, int widthDp, int heightDp, int dpi, ImageFormat extension, string color = null)
 		{
 			var pixelWidth = ResolutionConverter.DpToPixel(widthDp, dpi);
 			var pixelHeight = ResolutionConverter.DpToPixel(heightDp, dpi);
@@ -76,11 +107,30 @@ namespace svg.generator.shared.Modules
 
 				document.Draw(bitmap);
 
-				using (var writeStream = new FileStream(destination, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+				using (var writeStream =
+					new FileStream(destination, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
 				{
-					bitmap.Save(writeStream, imageFormat);
+					bitmap.Save(writeStream, extension);
 				}
 			}
+		}
+
+		public Dictionary<string, ImageFormat> SupportedFormats = new Dictionary<string, ImageFormat>()
+		{
+			{".png", ImageFormat.Png},
+			{".jpg", ImageFormat.Jpeg},
+			{".gif", ImageFormat.Gif},
+			{".bmp", ImageFormat.Bmp},
+			{".emf", ImageFormat.Emf},
+			{".exif", ImageFormat.Exif},
+			{".icon", ImageFormat.Icon},
+			{".tiff", ImageFormat.Tiff},
+			{".wmf", ImageFormat.Wmf},
+		};
+
+		private bool TryGetFormat(string extension, out ImageFormat imageFormat)
+		{
+			return SupportedFormats.TryGetValue(extension, out imageFormat);
 		}
 
 		private void ChangeFill(SvgElement element, Color replaceColor)

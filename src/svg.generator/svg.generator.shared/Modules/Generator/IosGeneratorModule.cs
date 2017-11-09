@@ -15,39 +15,22 @@ namespace svg.generator.shared.Modules.Generator
 		public override IEnumerable<ImageInformation> GetParameters()
 		{
 			// https://stackoverflow.com/questions/1365112/what-dpi-resolution-is-used-for-an-iphone-app
-			
-			if (!string.IsNullOrEmpty(Context.Options.ColorCodes))
-			{
-				foreach (var colorCode in Context.Options.GetColorCodes())
-				{
-					foreach (var sourceFile in Sources)
-					{
-						var fileName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile, colorCode);
 
-						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_1x.png"), Width, Height, 163, colorCode, new KeyValuePair<string, string>("scale", "1x"));
-						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_2x.png"), Width, Height, 326, colorCode, new KeyValuePair<string, string>("scale", "2x"));
-						yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_3x.png"), Width, Height, 489, colorCode, new KeyValuePair<string, string>("scale", "3x"));
-					}
-				}
-			}
-			else
+			foreach (var sourceFile in Sources)
 			{
-				foreach (var sourceFile in Sources)
-				{
-					var fileName = FileNameHelper.GetSanitizedAssetName(Width, Height, sourceFile);
+				var fileName = GetSanitizedFileName(sourceFile);
 
-					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_1x.png"), Width, Height, 163, null, new KeyValuePair<string, string>("scale", "1x"));
-					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_2x.png"), Width, Height, 326, null, new KeyValuePair<string, string>("scale", "2x"));
-					yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_3x.png"), Width, Height, 489, null, new KeyValuePair<string, string>("scale", "3x"));
-				}
+				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_1x.png"), Width, Height, 163, ColorCode, new KeyValuePair<string, string>("scale", "1x"));
+				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_2x.png"), Width, Height, 326, ColorCode, new KeyValuePair<string, string>("scale", "2x"));
+				yield return new ImageInformation(sourceFile, Path.Combine(Context.Options.Destination, fileName, "ios", $"{fileName}.imageset", $"{fileName}_3x.png"), Width, Height, 489, ColorCode, new KeyValuePair<string, string>("scale", "3x"));
 			}
 		}
 
 		/// <inheritdoc />
 		public override async Task GenerateAsync(List<ImageInformation> parameters)
 		{
-			await GenerateFilesAsync(parameters);
-			await GenerateIosContentFiles(parameters);
+			await GenerateFilesAsync(parameters).ConfigureAwait(false);
+			await GenerateIosContentFiles(parameters).ConfigureAwait(false);
 		}
 
 		private async Task GenerateIosContentFiles(List<ImageInformation> parameters)
@@ -56,7 +39,8 @@ namespace svg.generator.shared.Modules.Generator
 			int i = 0;
 			var max = imageSetGroups.Count();
 
-			Context.Log($" - Generating ios Contents.json files");
+			Context.Log($" - {GeneratorName} - Content.json ");
+
 			using (var progress = Context.ProgressVisualizerFactory.Create())
 			{
 				foreach (var group in imageSetGroups)
@@ -75,6 +59,8 @@ namespace svg.generator.shared.Modules.Generator
 					File.WriteAllText(contentFilePath, serialized);
 				}
 			}
+
+			Context.Log(Environment.NewLine);
 		}
 
 		private IosContentFile CreateContentFile(IEnumerable<ImageInformation> items)
@@ -94,5 +80,8 @@ namespace svg.generator.shared.Modules.Generator
 				}).ToArray()
 			};
 		}
+
+		/// <inheritdoc />
+		public override string GeneratorName => "ios";
 	}
 }

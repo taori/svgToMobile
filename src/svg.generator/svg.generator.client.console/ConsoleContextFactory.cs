@@ -15,15 +15,20 @@ namespace svg.generator.client.console
 		{
 			var generatorOptions = new GeneratorOptions();
 			var progressVisualizerFactory = new ProgressVisualizerFactory();
-			Action<string> consoleLogger = message =>
+			Action<string> lineLogger = message =>
 			{
 				if(generatorOptions.LoggingEnabled)
 					Console.WriteLine(message);
 			};
+			Action<string> contentLogger = message =>
+			{
+				if(generatorOptions.LoggingEnabled)
+					Console.Write(message);
+			};
 
 			if (Parser.Default.ParseArguments(Arguments, generatorOptions))
 			{
-				return new GeneratorContext(generatorOptions, consoleLogger, progressVisualizerFactory);
+				return new GeneratorContext(generatorOptions, progressVisualizerFactory, lineLogger, contentLogger);
 			}
 
 			return null;

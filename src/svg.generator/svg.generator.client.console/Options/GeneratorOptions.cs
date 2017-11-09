@@ -40,11 +40,24 @@ namespace svg.generator.client.console.Options
 			DefaultValue = null,
 			HelpText = "Accepts colors in a pattern like #ffffffx#ffffffff ")]
 		public string ColorCodes { get; set; }
+		
+		[Option('x', "extensions",
+			DefaultValue = ".jpg,.bmp,.png",
+			HelpText = "Accepts a pattern of accepted file formats like '.jpg,.png,.gif'.")]
+		public string FileExtensions { get; set; }
+
+		[Option('i', "interactive",
+			DefaultValue = true,
+			HelpText = "Whether or not the application should be executed without user interaction.")]
+		public bool Interactive { get; set; }
 
 		[Option('r', "recursive",
 			DefaultValue = false,
 			HelpText = "Recursive source read mode.")]
 		public bool Recursive { get; set; }
+
+		/// <inheritdoc />
+		public string Description => GetUsage();
 
 		[ParserState]
 		public IParserState LastParserState { get; set; }

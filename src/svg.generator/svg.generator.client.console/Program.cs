@@ -39,7 +39,11 @@ namespace svg.generator.client.console
 			foreach (var tool in Tools)
 			{
 				if (tool.TryClaimContext(context))
+				{
+					Console.WriteLine(context.Description);
+
 					await tool.ExecuteAsync().ConfigureAwait(false);
+				}
 			}
 		}
 	}

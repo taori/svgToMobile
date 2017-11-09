@@ -1,22 +1,17 @@
 ﻿using System;
+using svg.generator.shared.Tools;
 using svg.generator.shared.Utility;
 
 namespace svg.generator.shared.Modules.Generator
 {
-	public class GeneratorContext : IToolContext<IGeneratorOptions>
+	public class GeneratorContext : ToolContextBase<IGeneratorOptions>
 	{
 		/// <inheritdoc />
-		public GeneratorContext(IGeneratorOptions options, Action<string> log, IProgressVisualizerFactory progressVisualizerFactory)
+		public GeneratorContext(IGeneratorOptions options, IProgressVisualizerFactory progressVisualizerFactory, Action<string> logLine, Action<string> log) : base(options, progressVisualizerFactory, logLine, log)
 		{
-			Options = options ?? throw new ArgumentNullException(nameof(options));
-			Log = log ?? throw new ArgumentNullException(nameof(log));
-			ProgressVisualizerFactory = progressVisualizerFactory ?? throw new ArgumentNullException(nameof(progressVisualizerFactory));
 		}
 
-		public IGeneratorOptions Options { get; }
-
-		public Action<string> Log { get; }
-
-		public IProgressVisualizerFactory ProgressVisualizerFactory { get; }
+		/// <inheritdoc />
+		public override string Description => Options.Description;
 	}
 }
