@@ -74,6 +74,26 @@ namespace mobile.imagetools.shared.Tools
 				return false;
 			}
 
+			HashSet<string> filteredExtensions = new HashSet<string>();
+			foreach (var extension in extensions)
+			{
+				if(GeneratorModule.SupportedFormats.ContainsKey(extension.ToLowerInvariant()))
+				{
+					filteredExtensions.Add(extension);
+				}
+				else
+				{
+					Context.LogLine($"Extension {extension} is not supported and will not be rendered.");
+				}
+			}
+
+			extensions = filteredExtensions.ToArray();
+			if (extensions.Length == 0)
+			{
+				Context.LogLine("There are no valid extensions left to render.");
+				return false;
+			}
+
 			var current = 0;
 			var max = formatCount * Math.Max(1, colorCount);
 

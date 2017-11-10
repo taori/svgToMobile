@@ -114,17 +114,17 @@ namespace mobile.imagetools.shared.Modules
 			}
 		}
 
-		public Dictionary<string, ImageFormat> SupportedFormats = new Dictionary<string, ImageFormat>()
+		public static readonly Dictionary<string, ImageFormat> SupportedFormats = new Dictionary<string, ImageFormat>()
 		{
 			{".png", ImageFormat.Png},
 			{".jpg", ImageFormat.Jpeg},
 			{".gif", ImageFormat.Gif},
 			{".bmp", ImageFormat.Bmp},
-			{".emf", ImageFormat.Emf},
-			{".exif", ImageFormat.Exif},
-			{".icon", ImageFormat.Icon},
-			{".tiff", ImageFormat.Tiff},
-			{".wmf", ImageFormat.Wmf},
+//			{".icon", ImageFormat.Icon},
+//			{".emf", ImageFormat.Emf},
+//			{".exif", ImageFormat.Exif},
+//			{".tiff", ImageFormat.Tiff},
+//			{".wmf", ImageFormat.Wmf},
 		};
 
 		private bool TryGetImageFormat(string extension, out ImageFormat imageFormat)
