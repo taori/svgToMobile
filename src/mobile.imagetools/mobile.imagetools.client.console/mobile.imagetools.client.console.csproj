@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,7 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleContextFactory.cs" />
+    <Compile Include="ConsoleOptionsFactory.cs" />
+    <Compile Include="ConsoleToolContextFactory.cs" />
     <Compile Include="Options\GeneratorOptions.cs" />
     <Compile Include="lib\ProgressBar.cs" />
     <Compile Include="Program.cs" />

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CommandLine;
 using mobile.imagetools.shared.Tools;
 
 namespace mobile.imagetools.client.console
@@ -10,6 +12,8 @@ namespace mobile.imagetools.client.console
 	{
 		private static readonly List<MobileImagingTool> Tools = new List<MobileImagingTool>();
 
+		private static readonly Regex ToolInvocationsRegex = new Regex("-t .+?(?= -t |$)");
+
 		static Program()
 		{
 			Tools.Add(new ImageGeneratorTool());
@@ -17,36 +21,58 @@ namespace mobile.imagetools.client.console
 
 		public static async Task Main(string[] args)
 		{
-			if (!args.Any(d => d.Contains("-t")))
+			var joinedArgs = string.Join(" ", args);
+			var matches = ToolInvocationsRegex.Matches(joinedArgs);
+			if (matches.Count == 0)
 			{
 				Console.WriteLine("The following tools are supported: Pick a tool by using: -t {toolname}");
 				Console.WriteLine("");
 				foreach (var tool in Tools)
 				{
-					Console.WriteLine($"-{tool.Name}");
+					Console.WriteLine($" - {tool.Name}");
 				}
 				Console.WriteLine("");
+				return;
 			}
-
-			var contextFactory = new ConsoleContextFactory();
-			contextFactory.Arguments = args;
-			var context = contextFactory.Create();
-
-			foreach (var tool in Tools)
+			else
 			{
-				if (tool.TryClaimContext(context))
+				foreach (Match match in matches)
 				{
-					Console.WriteLine(context.Description);
-					try
-					{
+					await RunToolAsync(match.Value.Split(' '));
+				}
+			}
+		}
 
-						await tool.ExecuteAsync().ConfigureAwait(false);
-					}
-					catch (Exception e)
+		private static async Task RunToolAsync(string[] args)
+		{
+			var options = ConsoleOptionsFactory.CreateOptions(args).ToArray();
+			var usages = new List<string>();
+
+			foreach (var option in options)
+			{
+				if (Parser.Default.ParseArguments(args, option))
+				{
+					foreach (var tool in Tools)
 					{
-						Console.WriteLine(e);
+						if (tool.TryClaimContext(ConsoleToolContextFactory.Create(option)))
+						{
+							try
+							{
+								await tool.ExecuteAsync().ConfigureAwait(false);
+							}
+							catch (Exception e)
+							{
+								Console.WriteLine(e);
+							}
+							return;
+						}
 						return;
 					}
+					return;
+				}
+				else
+				{
+					usages.Add(option.Description);
 				}
 			}
 		}

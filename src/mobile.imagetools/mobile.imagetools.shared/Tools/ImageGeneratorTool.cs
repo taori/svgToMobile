@@ -9,7 +9,7 @@ using mobile.imagetools.shared.Utility;
 
 namespace mobile.imagetools.shared.Tools
 {
-	public class ImageGeneratorTool : MobileImagingTool<GeneratorContext>
+	public class ImageGeneratorTool : MobileImagingTool<IToolContext<IGeneratorOptions>>
 	{
 		public ImageGeneratorTool()
 		{
@@ -29,7 +29,7 @@ namespace mobile.imagetools.shared.Tools
 		/// <inheritdoc />
 		public override bool TryClaimContext(IToolContext context)
 		{
-			if (context is GeneratorContext c)
+			if (context is IToolContext<IGeneratorOptions> c)
 			{
 				Context = c;
 				return true;

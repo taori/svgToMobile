@@ -12,7 +12,7 @@ namespace mobile.imagetools.shared.Modules
 {
 	public abstract class GeneratorModule
 	{
-		internal void Configure(GeneratorContext context, int width, int height, string[] sourceFiles, ColorInfo color,
+		internal void Configure(IToolContext<IGeneratorOptions> context, int width, int height, string[] sourceFiles, ColorInfo color,
 			string[] extensions)
 		{
 			Context = context;
@@ -33,7 +33,7 @@ namespace mobile.imagetools.shared.Modules
 			return $"{Path.GetFileNameWithoutExtension(sourceFile)?.Replace('.', '_')}_{Width}x{Height}dp_{Color?.DisplayName ?? Color.HexCode}";
 		}
 
-		public GeneratorContext Context { get; internal set; }
+		public IToolContext<IGeneratorOptions> Context { get; internal set; }
 
 		public string[] Extensions { get; internal set; }
 

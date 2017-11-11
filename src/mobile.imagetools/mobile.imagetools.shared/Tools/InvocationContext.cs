@@ -4,10 +4,10 @@ using mobile.imagetools.shared.Utility;
 
 namespace mobile.imagetools.shared.Tools
 {
-	public abstract class ToolContextBase<TOptions> : IToolContext<TOptions> where TOptions : class, IToolOptions
+	public abstract class InvocationContext<TOptions> : IToolContext<TOptions> where TOptions : class, IToolOptions
 	{
 		/// <inheritdoc />
-		protected ToolContextBase(TOptions options, IProgressVisualizerFactory progressVisualizerFactory, Action<string> logLine, Action<string> log)
+		protected InvocationContext(TOptions options, IProgressVisualizerFactory progressVisualizerFactory, Action<string> logLine, Action<string> log)
 		{
 			Options = options ?? throw new ArgumentNullException(nameof(options));
 			LogLine = logLine ?? throw new ArgumentNullException(nameof(logLine));
@@ -16,7 +16,7 @@ namespace mobile.imagetools.shared.Tools
 		}
 
 		/// <inheritdoc />
-		public TOptions Options { get; }
+		public TOptions Options { get; set; }
 
 		/// <inheritdoc />
 		public Action<string> LogLine { get; }
@@ -28,6 +28,6 @@ namespace mobile.imagetools.shared.Tools
 		public IProgressVisualizerFactory ProgressVisualizerFactory { get; }
 
 		/// <inheritdoc />
-		public abstract string Description { get; }
+		public virtual string Description => Options.Description;
 	}
 }
