@@ -3,40 +3,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using mobile.imagetools.shared.Modules;
-using mobile.imagetools.shared.Modules.Generator;
+using mobile.imagetools.shared.Options;
+using mobile.imagetools.shared.Tools.ImageGenerator;
+using mobile.imagetools.shared.Tools.ImageGenerator.Data;
 using mobile.imagetools.shared.Utility;
 
 namespace mobile.imagetools.shared.Tools
 {
-	public class ImageGeneratorTool : MobileImagingTool<IToolContext<IGeneratorOptions>>
+	public class ImageGeneratorTool : MobileImagingTool<IImageGeneratorOptions>
 	{
 		public ImageGeneratorTool()
 		{
-			_modules = new List<GeneratorModule>()
-			{
-				new AndroidGeneratorModule(),
-				new IosGeneratorModule(),
-				new WebGeneratorModule()
-			};
+			var moduleTypes = typeof(GeneratorModule).Assembly.ExportedTypes.Where(type =>
+				!type.IsAbstract && typeof(GeneratorModule).IsAssignableFrom(type));
+
+			_modules = new List<GeneratorModule>();
+			_modules.AddRange(moduleTypes.Select(s => Activator.CreateInstance(s) as GeneratorModule));
 		}
 		
 		/// <inheritdoc />
 		public override string Name => "ImageGenerator";
 
-		private List<GeneratorModule> _modules = new List<GeneratorModule>();
-
-		/// <inheritdoc />
-		public override bool TryClaimContext(IToolContext context)
-		{
-			if (context is IToolContext<IGeneratorOptions> c)
-			{
-				Context = c;
-				return true;
-			}
-
-			return false;
-		}
+		private readonly List<GeneratorModule> _modules;
 		
 		/// <inheritdoc />
 		public override async Task<bool> ExecuteAsync()
@@ -56,26 +44,21 @@ namespace mobile.imagetools.shared.Tools
 			var sourceFiles = Directory.GetFiles(Context.Options.Source, "*.svg", searchOption);
 
 			Context.LogLine($"Generating files based on {sourceFiles.Length} source files.");
-
-			var formatCount = Context.Options.GetImageFormats().Count();
-			if(formatCount <= 0)
+			
+			if(Context.Options.ImageFormats.Length <= 0)
 			{
 				Context.LogLine($"Invalid format specified: {Context.Options.ImageFormats}.");
 				return false;
 			}
-
-			var colorCodes = Context.Options.GetColorCodes().ToArray();
-			var colorCount = colorCodes.Count();
-			var extensions = Context.Options.GetExtensions().ToArray();
-
-			if(extensions.Length == 0)
+			
+			if(Context.Options.FileExtensions.Length == 0)
 			{
 				Context.LogLine($"Invalid extensions specified: {Context.Options.FileExtensions}.");
 				return false;
 			}
 
 			HashSet<string> filteredExtensions = new HashSet<string>();
-			foreach (var extension in extensions)
+			foreach (var extension in Context.Options.FileExtensions)
 			{
 				if(GeneratorModule.SupportedFormats.ContainsKey(extension.ToLowerInvariant()))
 				{
@@ -87,7 +70,7 @@ namespace mobile.imagetools.shared.Tools
 				}
 			}
 
-			extensions = filteredExtensions.ToArray();
+			var extensions = filteredExtensions.ToArray();
 			if (extensions.Length == 0)
 			{
 				Context.LogLine("There are no valid extensions left to render.");
@@ -95,11 +78,11 @@ namespace mobile.imagetools.shared.Tools
 			}
 
 			var current = 0;
-			var max = formatCount * Math.Max(1, colorCount);
+			var max = Context.Options.ImageFormats.Length * Math.Max(1, Context.Options.ColorCodes.Length);
 
-			if (colorCount <= 0)
+			if (Context.Options.ColorCodes.Length <= 0)
 			{
-				foreach (var format in Context.Options.GetImageFormats())
+				foreach (var format in Context.Options.ImageFormats)
 				{
 					current++;
 					await RunModuleAsync(current, max, sourceFiles, format, null, extensions).ConfigureAwait(false);
@@ -107,22 +90,15 @@ namespace mobile.imagetools.shared.Tools
 			}
 			else
 			{
-				foreach (var colorCode in colorCodes)
+				foreach (var colorCode in Context.Options.ColorCodes)
 				{
-					foreach (var format in Context.Options.GetImageFormats())
+					foreach (var format in Context.Options.ImageFormats)
 					{
 						current++;
 						await RunModuleAsync(current, max, sourceFiles, format, colorCode, extensions).ConfigureAwait(false);
 					}
 				}
 			}
-
-			Context.LogLine($"done.");
-
-#if DEBUG
-			if (Context.Options.Interactive)
-				Console.ReadKey();
-#endif
 
 			return true;
 		}

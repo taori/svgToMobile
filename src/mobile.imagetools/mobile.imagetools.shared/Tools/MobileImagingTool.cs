@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using mobile.imagetools.shared.Options;
 using mobile.imagetools.shared.Utility;
 
 namespace mobile.imagetools.shared.Tools
@@ -12,8 +13,19 @@ namespace mobile.imagetools.shared.Tools
 		public abstract string Name { get; }
 	}
 
-	public abstract class MobileImagingTool<TContext> : MobileImagingTool
+	public abstract class MobileImagingTool<TOptions> : MobileImagingTool where TOptions : IToolOptions
 	{
-		public TContext Context { get; protected set; }
+		public IToolContext<TOptions> Context { get; protected set; }
+
+		/// <inheritdoc />
+		public sealed override bool TryClaimContext(IToolContext context)
+		{
+			if (context is IToolContext<TOptions> c)
+			{
+				Context = c;
+				return true;
+			}
+			return false;
+		}
 	}
 }

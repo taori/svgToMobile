@@ -1,22 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommandLine;
+using mobile.imagetools.client.console.Platform;
+using mobile.imagetools.shared.Options;
+using mobile.imagetools.shared.Platform;
 using mobile.imagetools.shared.Tools;
+using mobile.imagetools.shared.Tools.ImageGenerator;
+using mobile.imagetools.shared.Utility;
+using static mobile.imagetools.client.console.lib.ConsoleExtensions;
+using static System.Console;
 
 namespace mobile.imagetools.client.console
 {
 	public class Program
 	{
-		private static readonly List<MobileImagingTool> Tools = new List<MobileImagingTool>();
+		private static readonly Dictionary<string, MobileImagingTool> Tools;
+
+		private static readonly IToolPlatform Platform = new ConsolePlatform();
 
 		private static readonly Regex ToolInvocationsRegex = new Regex("-t .+?(?= -t |$)");
 
 		static Program()
 		{
-			Tools.Add(new ImageGeneratorTool());
+			var toolTypes = typeof(MobileImagingTool).Assembly.ExportedTypes.Where(type =>
+				typeof(MobileImagingTool).IsAssignableFrom(type) && !type.IsAbstract);
+
+			var tools = new List<MobileImagingTool>();
+			foreach (var toolType in toolTypes)
+			{
+				tools.Add(Activator.CreateInstance(toolType) as MobileImagingTool);
+			}
+
+			Tools = tools.ToDictionary(d => d.Name.ToLowerInvariant());
 		}
 
 		public static async Task Main(string[] args)
@@ -25,55 +44,93 @@ namespace mobile.imagetools.client.console
 			var matches = ToolInvocationsRegex.Matches(joinedArgs);
 			if (matches.Count == 0)
 			{
-				Console.WriteLine("The following tools are supported: Pick a tool by using: -t {toolname}");
-				Console.WriteLine("");
-				foreach (var tool in Tools)
-				{
-					Console.WriteLine($" - {tool.Name}");
-				}
-				Console.WriteLine("");
-				return;
+				DisplaySupportedToolNames();
 			}
 			else
 			{
+				DisplayToolInvocationCalls(matches);
+				DisplaySupportedToolNames();
 				foreach (Match match in matches)
 				{
 					await RunToolAsync(match.Value.Split(' '));
 				}
 			}
+
+#if DEBUG
+			Console.ReadKey();
+#endif
+		}
+
+		private static void DisplayToolInvocationCalls(MatchCollection matches)
+		{
+			WriteLine($" {matches.Count} calls have been queued for execution.", ConsoleColor.Yellow);
+			WriteLine($"");
+			foreach (Match match in matches)
+			{
+				WriteLine($" {match.Value}", ConsoleColor.Yellow);
+				WriteLine($"");
+			}
+			WriteLine($"");
+		}
+
+		private static void DisplaySupportedToolNames()
+		{
+			WriteLine("The following tools are supported: Pick a tool by using: -t {toolname}", ConsoleColor.Yellow);
+			WriteLine("");
+			foreach (var tool in Tools.Values)
+			{
+				WriteLine($" - {tool.Name}", ConsoleColor.Yellow);
+			}
+			WriteLine("");
 		}
 
 		private static async Task RunToolAsync(string[] args)
 		{
+			var parser = new CommandLine.Parser(p => p.HelpWriter = null);
 			var options = ConsoleOptionsFactory.CreateOptions(args).ToArray();
-			var usages = new List<string>();
+			var parseResults = options.Select(option => new {option, result = parser.ParseArguments(args, option)}).ToArray();
 
-			foreach (var option in options)
+			foreach (var combo in parseResults.Where(d => d.result))
 			{
-				if (Parser.Default.ParseArguments(args, option))
+				if (Tools.TryGetValue(combo.option.ToolName.ToLowerInvariant(), out var tool))
 				{
-					foreach (var tool in Tools)
+					if (tool.TryClaimContext(Platform.CreateContext(combo.option)))
 					{
-						if (tool.TryClaimContext(ConsoleToolContextFactory.Create(option)))
+						try
 						{
-							try
-							{
-								await tool.ExecuteAsync().ConfigureAwait(false);
-							}
-							catch (Exception e)
-							{
-								Console.WriteLine(e);
-							}
-							return;
+							WriteLine("#", ConsoleColor.Green);
+							WriteLine($"# Executing {tool.Name}", ConsoleColor.Green);
+							WriteLine($"# {string.Join(" ", args)}", ConsoleColor.Green);
+							WriteLine("#", ConsoleColor.Green);
+							WriteLine("");
+
+							await tool.ExecuteAsync().ConfigureAwait(false);
+
+							WriteLine("");
+							WriteLine("#", ConsoleColor.Green);
+							WriteLine($"# {tool.Name} finished successful.", ConsoleColor.Green);
+							WriteLine("#", ConsoleColor.Green);
 						}
+						catch (Exception e)
+						{
+							WriteLine("");
+							WriteLine("#", ConsoleColor.Red);
+							WriteLine($"# {tool.Name} crashed with errors.", ConsoleColor.Red);
+							WriteLine(e.ToString(), ConsoleColor.Red);
+							WriteLine("#", ConsoleColor.Red);
+						}
+
 						return;
 					}
-					return;
 				}
-				else
-				{
-					usages.Add(option.Description);
-				}
+
+				WriteLine("");
+				WriteLine("");
+			}
+
+			foreach (var combo in parseResults.Where(d => !d.result))
+			{
+				Console.WriteLine(combo.option.Description);
 			}
 		}
 	}

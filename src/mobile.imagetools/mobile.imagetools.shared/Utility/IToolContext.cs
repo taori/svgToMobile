@@ -1,5 +1,5 @@
 ﻿using System;
-using mobile.imagetools.shared.Modules.Generator;
+using mobile.imagetools.shared.Options;
 
 namespace mobile.imagetools.shared.Utility
 {

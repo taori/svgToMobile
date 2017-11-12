@@ -35,6 +35,7 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="Svg, Version=2.2.1.39233, Culture=neutral, PublicKeyToken=12a0bac221edeae2, processorArchitecture=MSIL">
       <HintPath>..\packages\Svg.2.3.0\lib\net35\Svg.dll</HintPath>
     </Reference>
@@ -50,24 +51,39 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\Generator\ColorInfo.cs" />
-    <Compile Include="Modules\Generator\FormatInfo.cs" />
-    <Compile Include="Tools\InvocationContext.cs" />
-    <Compile Include="Utility\ColorHelper.cs" />
-    <Compile Include="Modules\Generator\ImageInformation.cs" />
-    <Compile Include="Modules\Generator\IGeneratorOptions.cs" />
+    <Compile Include="Options\IContentFileGeneratorOptions.cs" />
+    <Compile Include="Options\IImageToXamarinDistributorOptions.cs" />
+    <Compile Include="Options\IUpdateXamarinAndroidProjectOptions.cs" />
+    <Compile Include="Options\IUpdateXamarinIosProjectOptions.cs" />
+    <Compile Include="Platform\GenericContext.cs" />
+    <Compile Include="Platform\IFeedbackFactory.cs" />
+    <Compile Include="Platform\ImagingToolPlatformBase.cs" />
+    <Compile Include="Platform\IToolPlatform.cs" />
     <Compile Include="Tools\ImageGeneratorTool.cs" />
+    <Compile Include="Tools\ImageGenerator\Data\ColorInfo.cs" />
+    <Compile Include="Tools\ImageGenerator\Data\FormatInfo.cs" />
+    <Compile Include="Options\IImageGeneratorOptions.cs" />
+    <Compile Include="Options\IToolOptions.cs" />
+    <Compile Include="Tools\ImageToXamarinDistributorTool.cs" />
+    <Compile Include="Tools\IosContentFileGeneratorTool.cs" />
+    <Compile Include="Tools\ToolContextBase.cs" />
+    <Compile Include="Tools\UpdateXamarinAndroidProjectTool.cs" />
+    <Compile Include="Tools\UpdateXamarinIosProjectTool.cs" />
+    <Compile Include="Utility\ColorHelper.cs" />
+    <Compile Include="Tools\ImageGenerator\Data\ImageInformation.cs" />
+    <Compile Include="Utility\ImageHelper.cs" />
     <Compile Include="Utility\IoHelper.cs" />
-    <Compile Include="Modules\Generator\iOS\IosContentFile.cs" />
-    <Compile Include="Modules\Generator\iOS\IosContentFileImage.cs" />
-    <Compile Include="Modules\Generator\iOS\IosContentFileInfo.cs" />
+    <Compile Include="Tools\IosContentFileGenerator\Data\ContentFile.cs" />
+    <Compile Include="Tools\IosContentFileGenerator\Data\ContentFileImage.cs" />
+    <Compile Include="Tools\IosContentFileGenerator\Data\ContentFileInfo.cs" />
     <Compile Include="Utility\IProgressVisualizerFactory.cs" />
-    <Compile Include="Modules\GeneratorModule.cs" />
-    <Compile Include="Modules\Generator\AndroidGeneratorModule.cs" />
-    <Compile Include="Modules\Generator\IosGeneratorModule.cs" />
-    <Compile Include="Modules\Generator\WebGeneratorModule.cs" />
+    <Compile Include="Tools\ImageGenerator\GeneratorModule.cs" />
+    <Compile Include="Tools\ImageGenerator\Modules\AndroidGeneratorModule.cs" />
+    <Compile Include="Tools\ImageGenerator\Modules\IosGeneratorModule.cs" />
+    <Compile Include="Tools\ImageGenerator\Modules\WebGeneratorModule.cs" />
     <Compile Include="ResolutionConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\MobileImagingTool.cs" />

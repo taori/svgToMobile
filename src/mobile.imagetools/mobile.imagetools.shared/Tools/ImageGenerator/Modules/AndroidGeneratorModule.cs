@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using mobile.imagetools.shared.Tools.ImageGenerator.Data;
 
-namespace mobile.imagetools.shared.Modules.Generator
+namespace mobile.imagetools.shared.Tools.ImageGenerator.Modules
 {
 	public class AndroidGeneratorModule : GeneratorModule
 	{

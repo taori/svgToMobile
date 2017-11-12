@@ -1,13 +1,13 @@
 ﻿using System;
-using mobile.imagetools.shared.Modules.Generator;
+using mobile.imagetools.shared.Options;
 using mobile.imagetools.shared.Utility;
 
 namespace mobile.imagetools.shared.Tools
 {
-	public abstract class InvocationContext<TOptions> : IToolContext<TOptions> where TOptions : class, IToolOptions
+	public abstract class ToolContextBase<TOptions> : IToolContext<TOptions> where TOptions : class, IToolOptions
 	{
 		/// <inheritdoc />
-		protected InvocationContext(TOptions options, IProgressVisualizerFactory progressVisualizerFactory, Action<string> logLine, Action<string> log)
+		protected ToolContextBase(TOptions options, IProgressVisualizerFactory progressVisualizerFactory, Action<string> logLine, Action<string> log)
 		{
 			Options = options ?? throw new ArgumentNullException(nameof(options));
 			LogLine = logLine ?? throw new ArgumentNullException(nameof(logLine));
@@ -16,7 +16,7 @@ namespace mobile.imagetools.shared.Tools
 		}
 
 		/// <inheritdoc />
-		public TOptions Options { get; set; }
+		public TOptions Options { get; }
 
 		/// <inheritdoc />
 		public Action<string> LogLine { get; }

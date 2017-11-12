@@ -4,15 +4,16 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
-using mobile.imagetools.shared.Modules.Generator;
+using mobile.imagetools.shared.Options;
+using mobile.imagetools.shared.Tools.ImageGenerator.Data;
 using mobile.imagetools.shared.Utility;
 using Svg;
 
-namespace mobile.imagetools.shared.Modules
+namespace mobile.imagetools.shared.Tools.ImageGenerator
 {
 	public abstract class GeneratorModule
 	{
-		internal void Configure(IToolContext<IGeneratorOptions> context, int width, int height, string[] sourceFiles, ColorInfo color,
+		internal void Configure(IToolContext<IImageGeneratorOptions> context, int width, int height, string[] sourceFiles, ColorInfo color,
 			string[] extensions)
 		{
 			Context = context;
@@ -33,7 +34,7 @@ namespace mobile.imagetools.shared.Modules
 			return $"{Path.GetFileNameWithoutExtension(sourceFile)?.Replace('.', '_')}_{Width}x{Height}dp_{Color?.DisplayName ?? Color.HexCode}";
 		}
 
-		public IToolContext<IGeneratorOptions> Context { get; internal set; }
+		public IToolContext<IImageGeneratorOptions> Context { get; internal set; }
 
 		public string[] Extensions { get; internal set; }
 
@@ -66,7 +67,7 @@ namespace mobile.imagetools.shared.Modules
 
 					IoHelper.CreateDirectoryRecursive(Path.GetDirectoryName(parameter.DestinationPath));
 					
-					foreach (var extension in Context.Options.GetExtensions())
+					foreach (var extension in Context.Options.FileExtensions)
 					{
 						if (TryGetImageFormat(extension.ToLowerInvariant(), out ImageFormat format))
 						{

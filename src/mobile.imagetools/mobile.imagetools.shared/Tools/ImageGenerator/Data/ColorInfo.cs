@@ -1,4 +1,4 @@
-﻿namespace mobile.imagetools.shared.Modules.Generator
+﻿namespace mobile.imagetools.shared.Tools.ImageGenerator.Data
 {
 	public class ColorInfo
 	{

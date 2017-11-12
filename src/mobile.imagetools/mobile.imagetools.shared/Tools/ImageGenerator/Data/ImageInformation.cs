@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace mobile.imagetools.shared.Modules.Generator
+namespace mobile.imagetools.shared.Tools.ImageGenerator.Data
 {
 	public struct ImageInformation
 	{

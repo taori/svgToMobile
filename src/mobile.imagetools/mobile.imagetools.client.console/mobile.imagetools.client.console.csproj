@@ -47,9 +47,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleOptionsFactory.cs" />
-    <Compile Include="ConsoleToolContextFactory.cs" />
-    <Compile Include="Options\GeneratorOptions.cs" />
+    <Compile Include="ConsoleOptionsParsers.cs" />
+    <Compile Include="ImagingToolPlatformBase.cs" />
+    <Compile Include="lib\ConsoleExtensions.cs" />
+    <Compile Include="Options\ConsoleOptionBase.cs" />
+    <Compile Include="Options\ImageGeneratorOptions.cs" />
     <Compile Include="lib\ProgressBar.cs" />
+    <Compile Include="Options\ImageToXamarinDistributiorOptions.cs" />
+    <Compile Include="Options\IosContentFileOptions.cs" />
+    <Compile Include="Options\UpdateXamarinAndroidProjectOptions.cs" />
+    <Compile Include="Options\UpdateXamarinIosProjectOptions.cs" />
+    <Compile Include="Platform\ConsolePlatform.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgressVisualizerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
