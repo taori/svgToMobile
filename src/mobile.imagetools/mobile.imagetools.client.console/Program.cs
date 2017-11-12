@@ -22,7 +22,7 @@ namespace mobile.imagetools.client.console
 
 		private static readonly IToolPlatform Platform = new ConsolePlatform();
 
-		private static readonly Regex ToolInvocationsRegex = new Regex("-t .+?(?= -t |$)");
+		private static readonly Regex ToolInvocationsRegex = new Regex("--tool .+?(?= --tool |$)");
 
 		static Program()
 		{
@@ -75,7 +75,7 @@ namespace mobile.imagetools.client.console
 
 		private static void DisplaySupportedToolNames()
 		{
-			WriteLine("The following tools are supported: Pick a tool by using: -t {toolname}", ConsoleColor.Yellow);
+			WriteLine("The following tools are supported: Pick a tool by using: --tool {toolname}", ConsoleColor.Yellow);
 			WriteLine("");
 			foreach (var tool in Tools.Values)
 			{

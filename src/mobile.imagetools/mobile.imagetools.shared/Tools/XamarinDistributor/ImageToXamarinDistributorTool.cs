@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using mobile.imagetools.shared.Options;
 using mobile.imagetools.shared.Utility;
 
-namespace mobile.imagetools.shared.Tools
+namespace mobile.imagetools.shared.Tools.XamarinDistributor
 {
 	public class ImageToXamarinDistributorTool : MobileImagingTool<IImageToXamarinDistributorOptions>
 	{
@@ -13,7 +13,7 @@ namespace mobile.imagetools.shared.Tools
 			if (!Directory.Exists(Context.Options.ModernPackageFolder))
 			{
 				Context.LogLine($"{Context.Options.ModernPackageFolder} does not exist.");
-				return true;
+				return false;
 			}
 
 			if (!string.IsNullOrEmpty(Context.Options.AndroidResourceFolder))
@@ -21,7 +21,7 @@ namespace mobile.imagetools.shared.Tools
 			if (!string.IsNullOrEmpty(Context.Options.IosResourceFolder))
 				MoveIosFolders();
 
-			return true;
+			return false;
 		}
 
 		private void MoveIosFolders()

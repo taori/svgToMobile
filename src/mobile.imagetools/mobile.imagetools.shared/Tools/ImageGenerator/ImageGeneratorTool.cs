@@ -4,11 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using mobile.imagetools.shared.Options;
-using mobile.imagetools.shared.Tools.ImageGenerator;
 using mobile.imagetools.shared.Tools.ImageGenerator.Data;
 using mobile.imagetools.shared.Utility;
 
-namespace mobile.imagetools.shared.Tools
+namespace mobile.imagetools.shared.Tools.ImageGenerator
 {
 	public class ImageGeneratorTool : MobileImagingTool<IImageGeneratorOptions>
 	{

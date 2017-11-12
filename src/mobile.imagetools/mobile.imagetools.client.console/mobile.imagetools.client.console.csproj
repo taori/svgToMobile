@@ -57,6 +57,7 @@
     <Compile Include="Options\IosContentFileOptions.cs" />
     <Compile Include="Options\UpdateXamarinAndroidProjectOptions.cs" />
     <Compile Include="Options\UpdateXamarinIosProjectOptions.cs" />
+    <Compile Include="Options\UpdateXamarinProjectOptionsBase.cs" />
     <Compile Include="Platform\ConsolePlatform.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProgressVisualizerFactory.cs" />

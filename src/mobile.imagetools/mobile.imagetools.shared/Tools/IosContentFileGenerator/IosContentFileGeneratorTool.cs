@@ -8,7 +8,7 @@ using mobile.imagetools.shared.Tools.IosContentFileGenerator.Data;
 using mobile.imagetools.shared.Utility;
 using Newtonsoft.Json;
 
-namespace mobile.imagetools.shared.Tools
+namespace mobile.imagetools.shared.Tools.IosContentFileGenerator
 {
 	public class IosContentFileGeneratorTool : MobileImagingTool<IContentFileGeneratorOptions>
 	{
@@ -20,12 +20,12 @@ namespace mobile.imagetools.shared.Tools
 			return true;
 		}
 
-		private async Task GenerateIosContentFilesAsync()
+		private async Task<bool> GenerateIosContentFilesAsync()
 		{
 			if (!Directory.Exists(Context.Options.SourceFolder))
 			{
 				Context.LogLine($"Directory \"{Context.Options.SourceFolder}\" does not exist.");
-				return;
+				return false;
 			}
 
 			switch (Context.Options.Mode)
@@ -38,8 +38,10 @@ namespace mobile.imagetools.shared.Tools
 					break;
 				default:
 					Context.LogLine($"Mode \"{Context.Options.Mode}\" not supported.");
-					return;
+					return false;
 			}
+
+			return true;
 		}
 
 		private async Task GenerateFilesByFoldersAsync(string[] folders)

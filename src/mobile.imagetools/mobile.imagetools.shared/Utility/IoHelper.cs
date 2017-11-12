@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -6,6 +7,17 @@ namespace mobile.imagetools.shared.Utility
 {
 	public static class IoHelper
 	{
+		public static IEnumerable<string> GetFilesRecursive(string fullPath, string[] extensions)
+		{
+			foreach (var extension in extensions)
+			{
+				foreach (var enumerateFile in Directory.EnumerateFiles(fullPath, $"*{extension}", SearchOption.AllDirectories))
+				{
+					yield return enumerateFile;
+				}
+			}
+		}
+
 		public static bool CreateDirectoryRecursive(string fullPath)
 		{
 			var paths = fullPath.Split(Path.DirectorySeparatorChar);

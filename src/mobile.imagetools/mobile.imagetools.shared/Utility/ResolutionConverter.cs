@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace mobile.imagetools.shared
+namespace mobile.imagetools.shared.Utility
 {
 	public static class ResolutionConverter
 	{

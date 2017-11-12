@@ -1,7 +1,6 @@
 ﻿namespace mobile.imagetools.shared.Options
 {
-	public interface IUpdateXamarinAndroidProjectOptions : IToolOptions
+	public interface IUpdateXamarinAndroidProjectOptions : IUpdateXamarinProjectOptionsBase
 	{
-		string CsProjectFilePath { get; }
 	}
 }
