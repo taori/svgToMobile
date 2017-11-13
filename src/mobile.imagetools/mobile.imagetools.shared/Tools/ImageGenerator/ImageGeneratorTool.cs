@@ -70,7 +70,7 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 					var alias = reader.GetField(1);
 					if (Context.Options.AliasMappings.TryGetValue(fileName, out var presentAlias))
 					{
-						Context.LogLine($"Alias for '{fileName}' is already mapped to '{presentAlias}'.");
+						Context.LogLine($"Alias for '{fileName}' is already mapped to '{presentAlias}'. Discarding alias '{alias}'.");
 					}
 					else
 					{
