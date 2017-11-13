@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using CommandLine;
 using mobile.imagetools.shared.Options;
 using mobile.imagetools.shared.Tools.ImageGenerator.Data;
@@ -80,5 +83,11 @@ namespace mobile.imagetools.client.console.Options
 
 		/// <inheritdoc />
 		public string[] FileExtensions { get; private set; }
+
+		[Option('a', "aliasMapping",
+			HelpText = "Accepts path to alias-mapping csv file.")]
+		public string AliasMappingPath { get; set; }
+
+		public Dictionary<string, string> AliasMappings { get; set; }
 	}
 }

@@ -1,4 +1,6 @@
-﻿using mobile.imagetools.shared.Tools.ImageGenerator.Data;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using mobile.imagetools.shared.Tools.ImageGenerator.Data;
 
 namespace mobile.imagetools.shared.Options
 {
@@ -36,8 +38,18 @@ namespace mobile.imagetools.shared.Options
 		ColorInfo[] ColorCodes { get; }
 
 		/// <summary>
-		/// Accepts pattern like .jpg,.png
+		/// Accepts pattern like .jpg.png
 		/// </summary>
 		string[] FileExtensions { get; }
+
+		/// <summary>
+		/// Path to alias csv.file
+		/// </summary>
+		string AliasMappingPath { get; }
+
+		/// <summary>
+		/// Alias dictionary, filename -> alias
+		/// </summary>
+		Dictionary<string, string> AliasMappings { get; set; }
 	}
 }

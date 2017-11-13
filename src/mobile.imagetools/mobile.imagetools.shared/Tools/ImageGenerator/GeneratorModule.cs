@@ -27,11 +27,19 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 		protected string GetSanitizedFileName(string sourceFile)
 		{
 			// someimage.svg -> someimage_24x24dp
+			var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(sourceFile);
+			if (Context.Options.AliasMappings.TryGetValue(fileNameWithoutExtension, out var alias))
+			{
+				fileNameWithoutExtension = alias;
+			}
+
+			var aliasedName = fileNameWithoutExtension?.Replace('.', '_');
+
 			if (string.IsNullOrEmpty(Color?.HexCode?.Trim()))
 			{
-				return $"{Path.GetFileNameWithoutExtension(sourceFile)?.Replace('.', '_')}_{Width}x{Height}dp";
+				return $"{aliasedName}_{Width}x{Height}dp";
 			}
-			return $"{Path.GetFileNameWithoutExtension(sourceFile)?.Replace('.', '_')}_{Width}x{Height}dp_{Color?.DisplayName ?? Color.HexCode}";
+			return $"{aliasedName}_{Width}x{Height}dp_{Color?.DisplayName ?? Color.HexCode}";
 		}
 
 		public IToolContext<IImageGeneratorOptions> Context { get; internal set; }

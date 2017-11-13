@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CsvHelper;
+using CsvHelper.Configuration;
 using mobile.imagetools.shared.Options;
 using mobile.imagetools.shared.Tools.ImageGenerator.Data;
 using mobile.imagetools.shared.Utility;
@@ -56,6 +58,27 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 				return false;
 			}
 
+			Context.Options.AliasMappings = new Dictionary<string, string>();
+			if (File.Exists(Context.Options.AliasMappingPath))
+			{
+				Context.LogLine($"Alias mapping file '{Context.Options.AliasMappingPath}' is being used.");
+
+				var reader = new CsvHelper.CsvReader(new CsvReader(Context.Options.AliasMappingPath), new Configuration(), false);
+				while (reader.Read())
+				{
+					var fileName = reader.GetField(0);
+					var alias = reader.GetField(1);
+					if (Context.Options.AliasMappings.TryGetValue(fileName, out var presentAlias))
+					{
+						Context.LogLine($"Alias for '{fileName}' is already mapped to '{presentAlias}'.");
+					}
+					else
+					{
+						Context.Options.AliasMappings.Add(fileName, alias);
+					}
+				}
+			}
+
 			HashSet<string> filteredExtensions = new HashSet<string>();
 			foreach (var extension in Context.Options.FileExtensions)
 			{
@@ -100,6 +123,70 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 			}
 
 			return true;
+		}
+
+		public class CsvReader : TextReader
+		{
+			private StreamReader _stream;
+
+			/// <inheritdoc />
+			protected override void Dispose(bool disposing)
+			{
+				if(disposing)
+				{
+					_stream?.Dispose();
+					_stream = null;
+				}
+
+				base.Dispose(disposing);
+			}
+
+			public CsvReader(string path)
+			{
+				_stream = new StreamReader(path);
+			}
+
+			/// <inheritdoc />
+			public override string ReadLine()
+			{
+				return _stream.ReadLine();
+			}
+
+			/// <inheritdoc />
+			public override Task<string> ReadLineAsync()
+			{
+				return _stream.ReadLineAsync();
+			}
+
+			/// <inheritdoc />
+			public override Task<string> ReadToEndAsync()
+			{
+				return _stream.ReadToEndAsync();
+			}
+
+			/// <inheritdoc />
+			public override void Close()
+			{
+				_stream.Close();
+			}
+
+			/// <inheritdoc />
+			public override int Read()
+			{
+				return _stream.Read();
+			}
+
+			/// <inheritdoc />
+			public override string ReadToEnd()
+			{
+				return base.ReadToEnd();
+			}
+
+			/// <inheritdoc />
+			public override Task<int> ReadAsync(char[] buffer, int index, int count)
+			{
+				return base.ReadAsync(buffer, index, count);
+			}
 		}
 
 		private async Task RunModuleAsync(int current, int max, string[] sourceFiles, FormatInfo format, ColorInfo color, string[] extensions)
