@@ -130,7 +130,7 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 			var m = max.ToString().Length;
 			var progress = string.Format("{0}/{1}", current.ToString().PadLeft(m, ' '), max);
 			Context.LogLine($"");
-			Context.LogLine($"   {progress} format: {format.Width}x{format.Height}, color: {color?.HexCode ?? "none"}, extension: {string.Join(",", extensions)}");
+			Context.LogLine($"   {progress} format: {format.Width}x{format.Height}, color: {color?.DisplayName ?? color?.HexCode ?? "none"}, extension: {string.Join(",", extensions)}");
 			Context.LogLine($"");
 
 			foreach (var module in _modules)

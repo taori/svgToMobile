@@ -5,9 +5,9 @@ namespace mobile.imagetools.shared.Utility
 {
 	public interface IToolContext
 	{
-		Action<string> LogLine { get; }
+		void LogLine(string message, bool important = false);
 
-		Action<string> Log { get; }
+		void Log(string message, bool important = false);
 
 		IProgressVisualizerFactory ProgressVisualizerFactory { get; }
 

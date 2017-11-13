@@ -26,10 +26,10 @@ namespace mobile.imagetools.client.console.Options
 		public bool SkipExisting { get; set; }
 
 		private string _colorCodesRaw;
-
+		
 		[Option('c', "color",
 			DefaultValue = null,
-			HelpText = "Accepts colors in a pattern like #ffffffx#ffffffff.")]
+			HelpText = "Accepts colors in a pattern like "+ ConsoleOptionsParsers.Generator.ColorCodePatternSample+ ".")]
 		public string ColorCodesRaw
 		{
 			get { return _colorCodesRaw; }
@@ -44,7 +44,7 @@ namespace mobile.imagetools.client.console.Options
 
 		[Option('f', "formats",
 			Required = true,
-			HelpText = "Formats to generate from svg files. Specify like: 32x32 or 32x32;64x64.")]
+			HelpText = "Formats to generate from svg files. Specify like: " + ConsoleOptionsParsers.Generator.FormatPatternSample + ".")]
 		public string ImageFormatsRaw
 		{
 			get { return _imageFormatsRaw; }
@@ -58,8 +58,8 @@ namespace mobile.imagetools.client.console.Options
 		private string _fileExtensionsRaw;
 
 		[Option('x', "extensions",
-			DefaultValue = ".jpg,.bmp,.png",
-			HelpText = "Accepts a pattern of accepted file formats like '.jpg,.png,.gif'.")]
+			DefaultValue = ".png",
+			HelpText = "Accepts a pattern of accepted file formats like '" + ConsoleOptionsParsers.Generator.ExtensionPatternSample + "'.")]
 		public string FileExtensionsRaw
 		{
 			get { return _fileExtensionsRaw; }

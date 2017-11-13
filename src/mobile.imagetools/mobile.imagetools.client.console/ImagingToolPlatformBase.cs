@@ -12,23 +12,13 @@ namespace mobile.imagetools.client.console
 		/// <inheritdoc />
 		public Action<string> CreateContentLogger<T>(T options) where T : class, IToolOptions
 		{
-			Action<string> logger = message =>
-			{
-				if (options.LoggingEnabled)
-					Console.Write(message);
-			};
-			return logger;
+			return s => Console.Write(s);
 		}
 
 		/// <inheritdoc />
 		public Action<string> CreateLineLogger<T>(T options) where T : class, IToolOptions
 		{
-			Action<string> logger = message =>
-			{
-				if (options.LoggingEnabled)
-					Console.WriteLine(message);
-			};
-			return logger;
+			return s => Console.WriteLine(s);
 		}
 
 		/// <inheritdoc />

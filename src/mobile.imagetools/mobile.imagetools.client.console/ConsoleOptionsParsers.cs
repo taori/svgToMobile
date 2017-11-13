@@ -9,7 +9,9 @@ namespace mobile.imagetools.client.console
 	{
 		public static class Generator
 		{
-			public static readonly Regex ColorCodeRegex = new Regex(@"(?:(?<color>#[0-9a-f]{8}|#[0-9a-f]{6}(?![0-9a-f]))(:(?<alias>[\w\d#]+))?;?)");
+			public const string ColorCodePatternSample = "#ffffff or #ffffff:white or #ffffff:white;#ff0000:red";
+
+			public static readonly Regex ColorCodeRegex = new Regex(@"(?:(?<color>#[0-9a-f]{8}|#[0-9a-f]{6}(?![0-9a-f]))(:(?<alias>[\w\d#]+))?;?)", RegexOptions.IgnoreCase);
 
 			public static IEnumerable<ColorInfo> GetColorCodes(string source)
 			{
@@ -22,6 +24,8 @@ namespace mobile.imagetools.client.console
 					yield return new ColorInfo(match.Groups["color"].Value, displayName);
 				}
 			}
+
+			public const string FormatPatternSample = "32x32 or 32x32;64x64";
 
 			public static readonly Regex FormatRegex = new Regex(@"^(?:([\d]+x[\d]+);?)+$");
 
@@ -39,6 +43,8 @@ namespace mobile.imagetools.client.console
 
 				}
 			}
+
+			public const string ExtensionPatternSample = ".png or .png,.jpg,.gif";
 
 			public static readonly Regex ExtensionRegex = new Regex(@"\.[\w]{3,}");
 

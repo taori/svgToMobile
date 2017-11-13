@@ -7,7 +7,7 @@ namespace mobile.imagetools.client.console.Options
 	{
 		[Option('p', "pattern",
 			DefaultValue = ".imageset$",
-			HelpText = "Path to project file.")]
+			HelpText = "Pattern used to identify folders which should be included to the project file by this tool.")]
 		public string ImageSetFolderPattern { get; set; }
 	}
 }

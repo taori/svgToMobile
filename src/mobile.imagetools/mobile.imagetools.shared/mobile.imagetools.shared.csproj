@@ -72,6 +72,7 @@
     <Compile Include="Tools\ImageGenerator\Data\FormatInfo.cs" />
     <Compile Include="Options\IImageGeneratorOptions.cs" />
     <Compile Include="Options\IToolOptions.cs" />
+    <Compile Include="Tools\UpdateXamarinProject\UpdateXamarinProjectToolBase.cs" />
     <Compile Include="Tools\XamarinDistributor\ImageToXamarinDistributorTool.cs" />
     <Compile Include="Tools\IosContentFileGenerator\IosContentFileGeneratorTool.cs" />
     <Compile Include="Tools\ToolContextBase.cs" />

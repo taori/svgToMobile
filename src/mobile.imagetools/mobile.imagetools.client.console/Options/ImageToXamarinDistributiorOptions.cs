@@ -10,7 +10,7 @@ namespace mobile.imagetools.client.console.Options
 			HelpText = "folder of package in a fashion prodced similar to modernui.com.")]
 		public string ModernPackageFolder { get; set; }
 
-		[Option("iosFolder",
+		[Option('i', "iosFolder",
 			Required = true,
 			HelpText = "Media assets folder of ios project.")]
 		public string IosResourceFolder { get; set; }
@@ -20,7 +20,7 @@ namespace mobile.imagetools.client.console.Options
 			HelpText = "Resource root folder of android project.")]
 		public string AndroidResourceFolder { get; set; }
 
-		[Option('r', "androidFolder",
+		[Option('r', "clearDestination",
 			DefaultValue = true,
 			HelpText = "Remove existing asset folders at destination.")]
 		public bool DeleteExisting { get; set; }
