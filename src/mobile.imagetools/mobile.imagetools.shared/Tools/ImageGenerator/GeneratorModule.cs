@@ -147,7 +147,7 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 			if (element is SvgPath path)
 			{
 				// prevent full layer paints, so images from material.io don't get overdrawn by their first layer
-				if (path.Bounds.Size != document.Bounds.Size)
+				if (path.Bounds.X >= 0.01 || path.Bounds.Y >= 0.01 || path.Bounds.Size != document.Bounds.Size)
 					element.Fill = new SvgColourServer(replaceColor);
 			}
 
