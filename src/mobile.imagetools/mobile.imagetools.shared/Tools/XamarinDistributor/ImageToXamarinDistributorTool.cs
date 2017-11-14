@@ -56,7 +56,13 @@ namespace mobile.imagetools.shared.Tools.XamarinDistributor
 							foreach (var file in Directory.GetFiles(imageSet))
 							{
 								var fileName = Path.GetFileName(file);
-								File.Copy(Path.Combine(imageSet, fileName), Path.Combine(destination, fileName));
+								var sourcePath = Path.Combine(imageSet, fileName);
+								var destinationPath = Path.Combine(destination, fileName);
+
+								if (File.Exists(destinationPath) && Context.Options.DeleteExisting)
+									File.Delete(destinationPath);
+
+								File.Copy(sourcePath, destinationPath);
 							}
 						}
 					}

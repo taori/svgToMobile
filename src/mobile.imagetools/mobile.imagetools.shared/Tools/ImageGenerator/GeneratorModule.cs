@@ -105,11 +105,12 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 				document.Width = new SvgUnit(SvgUnitType.Pixel, pixelWidth);
 				document.Height = new SvgUnit(SvgUnitType.Pixel, pixelHeight);
 				document.Ppi = dpi;
+				
 				if (color != null)
 				{
 					foreach (var documentChild in document.Children)
 					{
-						ChangeFill(documentChild, ColorHelper.FromRgb(color.HexCode));
+						ChangeFill(document, documentChild, ColorHelper.FromRgb(color.HexCode));
 					}
 				}
 
@@ -141,18 +142,20 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 			return SupportedFormats.TryGetValue(extension, out imageFormat);
 		}
 
-		private void ChangeFill(SvgElement element, Color replaceColor)
+		private void ChangeFill(SvgDocument document, SvgElement element, Color replaceColor)
 		{
 			if (element is SvgPath path)
 			{
-				element.Fill = new SvgColourServer(replaceColor);
+				// prevent full layer paints, so images from material.io don't get overdrawn by their first layer
+				if (path.Bounds.Size != document.Bounds.Size)
+					element.Fill = new SvgColourServer(replaceColor);
 			}
 
 			if (element.Children.Count > 0)
 			{
 				foreach (var item in element.Children)
 				{
-					ChangeFill(item, replaceColor);
+					ChangeFill(document, item, replaceColor);
 				}
 			}
 		}
