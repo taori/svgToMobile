@@ -11,5 +11,7 @@
 		string SourceFolder { get; }
 
 		ContentFileMode Mode { get; }
+
+		string FolderPattern { get; }
 	}
 }

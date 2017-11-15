@@ -59,7 +59,7 @@ namespace mobile.imagetools.client.console
 
 #if DEBUG
 			if (args.Contains("--interactive") || Debugger.IsAttached)
-				Console.ReadKey();
+				ReadKey();
 #endif
 		}
 
@@ -88,51 +88,65 @@ namespace mobile.imagetools.client.console
 
 		private static async Task RunToolAsync(string[] args)
 		{
-			var parser = new CommandLine.Parser(p => p.HelpWriter = null);
+			var parser = new Parser(p => p.HelpWriter = null);
 			var options = ConsoleOptionsFactory.CreateOptions(args).ToArray();
-			var parseResults = options.Select(option => new {option, result = parser.ParseArguments(args, option)}).ToArray();
 
-			foreach (var combo in parseResults.Where(d => d.result))
+			if (options.Length == 0)
 			{
-				if (Tools.TryGetValue(combo.option.ToolName.ToLowerInvariant(), out var tool))
-				{
-					if (tool.TryClaimContext(Platform.CreateContext(combo.option)))
-					{
-						try
-						{
-							WriteLine("#", ConsoleColor.Green);
-							WriteLine($"# Executing {tool.Name}", ConsoleColor.Green);
-							WriteLine($"# {string.Join(" ", args)}", ConsoleColor.Green);
-							WriteLine("#", ConsoleColor.Green);
-							WriteLine("");
-
-							await tool.ExecuteAsync().ConfigureAwait(false);
-
-							WriteLine("");
-							WriteLine("#", ConsoleColor.Green);
-							WriteLine($"# {tool.Name} finished successful.", ConsoleColor.Green);
-							WriteLine("#", ConsoleColor.Green);
-						}
-						catch (Exception e)
-						{
-							WriteLine("");
-							WriteLine("#", ConsoleColor.Red);
-							WriteLine($"# {tool.Name} crashed with errors.", ConsoleColor.Red);
-							WriteLine(e.ToString(), ConsoleColor.Red);
-							WriteLine("#", ConsoleColor.Red);
-						}
-
-						return;
-					}
-				}
-
-				WriteLine("");
-				WriteLine("");
+				WriteLine("No options to work with.", ConsoleColor.Red);
+				return;
 			}
 
-			foreach (var combo in parseResults.Where(d => !d.result))
+			var parsedOptions = options.Select(option => new { option, result = parser.ParseArguments(args, option) }).ToArray();
+			var firstOption = options[0];
+			if (!Tools.TryGetValue(firstOption.ToolName.ToLowerInvariant(), out var tool))
 			{
-				Console.WriteLine(combo.option.Description);
+				WriteLine($"There is no tool which matches the attempted invocation of '{firstOption.ToolName}'.", ConsoleColor.Red);
+				return;
+			}
+
+			var matchingOption = parsedOptions.FirstOrDefault(d => tool.CanProcessOptions(d.option));
+			if (matchingOption == null)
+			{
+				WriteLine($"There is no tool which can process the given options.", ConsoleColor.Red);
+				return;
+			}
+
+			if (!matchingOption.result)
+			{
+				WriteLine($"The tool can't be executed because of a parsing error.", ConsoleColor.Red);
+				WriteLine(matchingOption.option.Description);
+				return;
+			}
+
+			if (tool.TryClaimContext(Platform.CreateContext(matchingOption.option)))
+			{
+				try
+				{
+					WriteLine("#", ConsoleColor.Green);
+					WriteLine($"# Executing {tool.Name}", ConsoleColor.Green);
+					WriteLine($"# {string.Join(" ", args)}", ConsoleColor.Green);
+					WriteLine("#", ConsoleColor.Green);
+					WriteLine("");
+
+					await tool.ExecuteAsync().ConfigureAwait(false);
+
+					WriteLine("");
+					WriteLine("#", ConsoleColor.Green);
+					WriteLine($"# {tool.Name} finished successful.", ConsoleColor.Green);
+					WriteLine("#", ConsoleColor.Green);
+				}
+				catch (Exception e)
+				{
+					WriteLine("");
+					WriteLine("#", ConsoleColor.Red);
+					WriteLine($"# {tool.Name} crashed with errors.", ConsoleColor.Red);
+					WriteLine(e.ToString(), ConsoleColor.Red);
+					WriteLine("#", ConsoleColor.Red);
+				}
+				
+				WriteLine("");
+				WriteLine("");
 			}
 		}
 	}

@@ -10,7 +10,7 @@
 		/// <summary>
 		/// Whether or not logging is enabled. 
 		/// </summary>
-		bool LoggingEnabled { get; set; }
+		bool Verbose { get; set; }
 
 		/// <summary>
 		/// Whether or not the application should be run in non interactive mode.

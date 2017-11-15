@@ -14,5 +14,10 @@ namespace mobile.imagetools.client.console.Options
 			Required = true,
 			HelpText = "Mode of execution: ModernUiPackage, IosAssetFolder.")]
 		public ContentFileMode Mode { get; set; }
+
+		[Option('f', "filter",
+			DefaultValue = @"\.imageset$",
+			HelpText = "Pattern used to identify folders which are subject to Contents.json generation.")]
+		public string FolderPattern { get; set; }
 	}
 }

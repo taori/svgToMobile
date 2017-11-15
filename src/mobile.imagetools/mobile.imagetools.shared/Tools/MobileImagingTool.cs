@@ -6,6 +6,8 @@ namespace mobile.imagetools.shared.Tools
 {
 	public abstract class MobileImagingTool
 	{
+		public abstract bool CanProcessOptions(IToolOptions options);
+
 		public abstract bool TryClaimContext(IToolContext context);
 
 		public abstract Task<bool> ExecuteAsync();
@@ -16,6 +18,12 @@ namespace mobile.imagetools.shared.Tools
 	public abstract class MobileImagingTool<TOptions> : MobileImagingTool where TOptions : IToolOptions
 	{
 		public IToolContext<TOptions> Context { get; protected set; }
+
+		/// <inheritdoc />
+		public override bool CanProcessOptions(IToolOptions options)
+		{
+			return options is TOptions;
+		}
 
 		/// <inheritdoc />
 		public sealed override bool TryClaimContext(IToolContext context)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using mobile.imagetools.shared.Options;
 using mobile.imagetools.shared.Tools.ImageGenerator;
@@ -46,6 +47,11 @@ namespace mobile.imagetools.shared.Tools.IosContentFileGenerator
 
 		private async Task GenerateFilesByFoldersAsync(string[] folders)
 		{
+			var regex = new Regex(Context.Options.FolderPattern, RegexOptions.IgnoreCase);
+			Context.LogLine($"Using the pattern '{Context.Options.FolderPattern}' to filter folders which are subject to Contents.json-generation.");
+
+			folders = folders.Where(folder => regex.IsMatch(folder)).ToArray();
+
 			Context.LogLine($"Generating {folders.Length} files.");
 
 			using (var progress = Context.ProgressVisualizerFactory.Create())

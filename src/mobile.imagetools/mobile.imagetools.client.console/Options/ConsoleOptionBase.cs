@@ -14,7 +14,7 @@ namespace mobile.imagetools.client.console.Options
 		[Option("verbose",
 			DefaultValue = false,
 			HelpText = "Verbose mode.")]
-		public bool LoggingEnabled { get; set; }
+		public bool Verbose { get; set; }
 
 		[Option("interactive",
 			DefaultValue = true,
