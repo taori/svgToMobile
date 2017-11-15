@@ -25,14 +25,14 @@ namespace mobile.imagetools.shared.Tools
 		/// <inheritdoc />
 		public void LogLine(string message, bool important = false)
 		{
-			if (important || Options.LoggingEnabled)
+			if (important || Options.Verbose)
 				_logLine(message);
 		}
 
 		/// <inheritdoc />
 		public void Log(string message, bool important = false)
 		{
-			if (important || Options.LoggingEnabled)
+			if (important || Options.Verbose)
 				_log(message);
 		}
 
