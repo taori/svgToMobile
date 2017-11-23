@@ -151,6 +151,13 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 					element.Fill = new SvgColourServer(replaceColor);
 			}
 
+			if (element is SvgRectangle rectangle)
+			{
+				// prevent full layer paints, so images from material.io don't get overdrawn by their first layer
+				if (rectangle.Bounds.X >= 0.01 || rectangle.Bounds.Y >= 0.01 || rectangle.Bounds.Size != document.Bounds.Size)
+					element.Fill = new SvgColourServer(replaceColor);
+			}
+
 			if (element.Children.Count > 0)
 			{
 				foreach (var item in element.Children)
