@@ -112,7 +112,7 @@ namespace mobile.imagetools.shared.Tools.IosContentFileGenerator
 				scaleIndex++;
 				foreach (var section in group)
 				{
-					fileInfos[arrIndex] = new ContentFileImage(Path.GetFileName(section.file), "universal", $"{scaleIndex}x", $"{section.info.Width}x{section.info.Height}");
+					fileInfos[arrIndex] = new ContentFileImage(Path.GetFileName(section.file), "universal", $"{scaleIndex}x");
 					arrIndex++;
 				}
 			}

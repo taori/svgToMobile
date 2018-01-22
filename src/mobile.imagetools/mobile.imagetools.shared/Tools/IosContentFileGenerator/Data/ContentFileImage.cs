@@ -21,25 +21,18 @@ namespace mobile.imagetools.shared.Tools.IosContentFileGenerator.Data
 		/// </summary>
 		[JsonProperty("scale")]
 		public string Scale { get; set; }
-
-		/// <summary>
-		/// e.g. "29x29"
-		/// </summary>
-		[JsonProperty("size")]
-		public string Size { get; set; }
-
+		
 		/// <inheritdoc />
 		public ContentFileImage()
 		{
 		}
 
 		/// <inheritdoc />
-		public ContentFileImage(string filename, string idiom, string scale, string size)
+		public ContentFileImage(string filename, string idiom, string scale)
 		{
 			Filename = filename;
 			Idiom = idiom;
 			Scale = scale;
-			Size = size;
 		}
 	}
 }
