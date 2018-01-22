@@ -16,7 +16,7 @@ namespace mobile.imagetools.shared.Tools.UpdateXamarinProject
 		{
 			var element = new XElement(ns + "ImageAsset");
 			element.Add(new XAttribute("Include", path));
-			element.Add(new XElement(ns + "InProject", "false"));
+			element.Add(new XElement(ns + "Visible", "false"));
 			itemGroup.Add(element);
 		}
 
