@@ -33,16 +33,16 @@ namespace mobile.imagetools.shared.Tools.UpdateXamarinProject
 			var document = XDocument.Load(Context.Options.CsProjectFilePath);
 			var resourceFiles = GetFilteredResourceFiles(GetRelativePaths(GetSupportedResourceFiles()));
 			var presentElements = GetPresentElements(document, xNamespace);
-			var f = presentElements.Count();
+
+			// helps filtering duplicate nodes
+			var uniquePaths = new HashSet<string>();
 			var presentInformations = presentElements.Select(s => new
 			{
 				s.element,
 				path = GetRelativePathFromElement(s.element),
 				s.group
-			}).Where(d => !string.IsNullOrEmpty(d.path)).ToArray();
-
-			var a = resourceFiles.Where(d => d.EndsWith(".json")).Count();
-			var b = presentInformations.Where(d => d.path.EndsWith(".json")).Count();
+			}).Where(d => !string.IsNullOrEmpty(d.path) && uniquePaths.Add(d.path)).ToArray();
+			
 
 			var presentPaths = presentInformations.ToDictionary(s => s.path);
 			var resourcePaths = new HashSet<string>(resourceFiles);
