@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -63,6 +64,9 @@ namespace mobile.imagetools.shared.Tools.IosContentFileGenerator
 					folderCount++;
 					progress.Report((float)folderCount / max);
 					
+					if(IsIgnoredFolder(folder))
+						continue;
+
 					var contentFilePath = Path.Combine(folder, "Contents.json");
 					var contentFile = CreateContentFile(folder);
 					var serialized = JsonConvert.SerializeObject(contentFile, Formatting.Indented);
@@ -70,6 +74,11 @@ namespace mobile.imagetools.shared.Tools.IosContentFileGenerator
 					File.WriteAllText(contentFilePath, serialized);
 				}
 			}
+		}
+
+		private static bool IsIgnoredFolder(string folder)
+		{
+			return folder.EndsWith(".launchimage", StringComparison.CurrentCultureIgnoreCase) || folder.EndsWith(".appiconset", StringComparison.CurrentCultureIgnoreCase);
 		}
 
 		private string[] GetFoldersForIosResourceFolder()

@@ -48,7 +48,7 @@ namespace mobile.imagetools.shared.Tools.ImageGenerator
 			
 			if(Context.Options.ImageFormats.Length <= 0)
 			{
-				Context.LogLine($"Invalid format specified: {Context.Options.ImageFormats}.");
+				Context.LogLine($"Missing ImageFormats in configuration. E.g. 24x24;48x48.");
 				return false;
 			}
 			
